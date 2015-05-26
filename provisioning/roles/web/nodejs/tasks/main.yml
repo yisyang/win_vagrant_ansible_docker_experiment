@@ -1,0 +1,23 @@
+---
+# File: main.yml
+# Type: task
+# Part: NodeJS
+
+## Install
+- include: install-raspberry.yml
+  when: ansible_architecture == 'armv6l' and ansible_distribution == 'Debian'
+- include: install-armv7l.yml
+  when: ansible_architecture == 'armv7l'
+- include: install-ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+## Install global packages
+- name: NodeJS | NPM | Install global packages
+  npm: name={{ item }} global=yes state={{ nodejs_apt_state }}
+  when: nodejs_npm_modules is defined
+  with_items: nodejs_npm_modules
+
+## Install supervisor service
+- include: configure-supervisor.yml
+  tags: web_nodejs_supervisor
+  when: docker

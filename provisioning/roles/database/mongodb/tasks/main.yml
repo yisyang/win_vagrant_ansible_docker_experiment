@@ -1,0 +1,69 @@
+---
+# File: main.yml
+# Type: task
+# Part: MongoDB
+
+## Variable
+- set_fact:
+    mongodb_service: "mongod"
+  when: mongodb_apt_flavor == "org"
+- set_fact:
+    mongodb_service: "mongodb"
+  when: mongodb_apt_flavor == "10gen"
+
+## Install
+- include: install-arm.yml
+  when: ansible_architecture == 'armv6l' or ansible_architecture == 'armv7l'
+- include: install-ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+- service: name={{ mongodb_service }} state=stopped enabled=yes
+  when: ansible_distribution == 'Ubuntu'
+
+## Install ansible related packages
+- name: MongoDB | Install pymongo package
+  apt: name=python-pip state={{ mongodb_apt_state }}
+- pip: name=pymongo state=present
+
+## Setup custom location
+- include: location.yml
+  when: "'{{ mongodb_path }}' != '/var/lib/mongodb'"
+
+## Setup php
+- include: php5.yml
+  when: mongodb_php5 is defined
+
+## Configure user
+- name: MongoDB | Setup group
+  user: name={{ mongodb_group }}
+- name: MongoDB | Setup user
+  user: name={{ mongodb_user }} group={{ mongodb_group }} home="/var/lib/mongodb" shell="/bin/false" comment="MongoDB Server"
+
+## Configure MongoDB
+- name: MongoDB | Backup configuration
+  shell: creates=/etc/{{ mongodb_service }}.conf.orig cp /etc/{{ mongodb_service }}.conf /etc/{{ mongodb_service }}.conf.orig
+  ignore_errors: True
+  register: result
+- fetch: src=/etc/{{ mongodb_service }}.conf.orig dest=fetched
+  when: result|changed
+- name: MongoDB | Ensure log folder exists
+  file: path=/var/log/mongodb state=directory owner={{ mongodb_user }} group={{ mongodb_group }} mode=0755
+- name: MongoDB | Deploy configuration
+  template: src=mongod.conf.j2 dest=/etc/{{ mongodb_service }}.conf owner=root group=root mode=0644 backup=yes
+  notify: restart mongod
+  register: result
+- fetch: src=/etc/{{ mongodb_service }}.conf dest=fetched
+  when: result|changed
+
+## Configure service
+- include: configure-upstart.yml
+  when: not docker
+- include: configure-supervisor.yml
+  when: docker
+
+## Setup Backup
+- include: configure-backup.yml
+  when: mongodb_backup == True
+
+## Setup MMS
+# - include: mms.yml
+#  when: "'{{ mms_api_key }}' != ''"

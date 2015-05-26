@@ -1,0 +1,12 @@
+---
+# File: location.yml
+# Type: task
+# Part: Nginx
+# Desc: Setup custom location
+
+- name: Nginx | Move directory
+  shell: service nginx stop; cp -rf /var/www/* {{ nginx_path }}; touch {{ nginx_path }}/.ansible; chown -R {{ nginx_user }}:{{ nginx_group }} {{ nginx_path }}; rm -rf /var/www
+    creates={{ nginx_path }}/.ansible
+- name: Nginx | Link directories
+  file: state=link src={{ nginx_path }} path=/var/www force=yes
+  notify: restart nginx

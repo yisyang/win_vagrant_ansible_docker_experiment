@@ -1,0 +1,7 @@
+---
+# File: main.yml
+# Type: defaults
+# Part: Scott/Bootstrap
+
+custom_user: "scott"
+custom_user_pubkey: "pubkey.rsa"

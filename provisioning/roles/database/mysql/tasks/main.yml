@@ -1,0 +1,51 @@
+---
+# File: main.yml
+# Type: task
+# Part: MySQL
+
+
+## Preseed install for root password
+- include: password.yml
+  when: mysql_root_password is defined and mysql_root_password != ""
+
+## Install
+- name: MySQL | Install package
+  apt: name=mysql-server state={{ mysql_apt_state }}
+  notify: restart mysql
+- name: MySQL | Setup MySQL password file
+  when: mysql_root_password is defined and mysql_root_password != ""
+  template: src=root_my.cnf.j2 dest=/root/.my.cnf
+
+## Install ansible related packages
+- name: MySQL | Install python package
+  apt: name=python-mysqldb state={{ mysql_apt_state }}
+
+## Setup custom location
+- include: location.yml
+  when: "'{{ mysql_path }}' != '/var/lib/mysql'"
+
+## Configure
+- name: MySQL | Backup configuration
+  shell: creates=/etc/mysql/my.cnf.orig cp /etc/mysql/my.cnf /etc/mysql/my.cnf.orig
+  register: result
+- fetch: src=/etc/mysql/my.cnf.orig dest=fetched
+  when: result|changed
+- name: MySQL | Deploy configuration
+  template: src=mysql_my.cnf.j2 dest=/etc/mysql/my.cnf owner=root mode=0644 backup=yes
+  notify: restart mysql
+  register: result
+- fetch: src=/etc/mysql/my.cnf dest=fetched
+  when: result|changed
+
+## Configure service
+- include: configure-upstart.yml
+  when: not docker
+- include: configure-supervisor.yml
+  when: docker
+
+## Secure installation
+- include: security.yml
+
+## Check service
+- name: MySQL | Check service daemon
+  service: name=mysql state=started

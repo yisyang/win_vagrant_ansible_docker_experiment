@@ -1,0 +1,9 @@
+---
+# File: main.yml
+# Type: handler
+# Part: MySQL
+
+- include: upstart.yml
+  when: not docker
+- include: supervisor.yml
+  when: docker

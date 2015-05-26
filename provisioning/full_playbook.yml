@@ -1,0 +1,81 @@
+---
+# File: playbook.yml
+# Type: playbook
+# @cli vagrant destroy; vagrant up; rm -rf fetched/*
+# @cli ansible-playbook -i vagrant_inventory playbook.yml
+
+- name: Set global facts
+  hosts: all
+  tags: always
+  tasks:
+    - set_fact: docker={{ ansible_virtualization_type is defined and ansible_virtualization_type == 'docker' and ansible_virtualization_role == 'guest' }}
+    - set_fact: ansible_fetched_base=fetched/{{ group_names[0] | default('') }}/{{ inventory_hostname }}
+
+- name: Apt update
+  hosts: all
+  sudo: yes
+  tags: apt_update
+  tasks:
+    - name: Setup | Update aptitude
+      apt: update_cache=yes cache_valid_time=3600
+
+- name: Scott bootstrap
+  hosts: all
+  sudo: yes
+  tags: scott_bootstrap
+  roles:
+    - role: scott/bootstrap
+
+- name: Ansible setup
+  hosts: all
+  sudo: yes
+  roles:
+    - role: ansible/setup
+      tags: ansible
+
+- name: Fetch facts
+  hosts: all
+  sudo: yes
+  roles:
+    - role: ansible/facts
+      tags: ansible_facts
+
+- name: Execute playbook
+  # connection: fireball
+  # accelerate: true
+  hosts: all
+  sudo: yes
+  roles:
+    - role: docker_ubuntu
+    # - role: system/docker
+      # tags: system_docker
+    - role: system/boot
+      tags: system_boot
+    - role: system/sudo
+      tags: system_sudo
+    - role: database/beanstalkd
+      tags: database_beanstalkd
+    - role: database/mysql
+      tags: database_mysql
+    - role: database/mongodb
+      tags: database_mongodb
+    - role: database/redis
+      tags: database_redis
+    # - role: web/apache2
+      # tags: web_apache2
+    - role: web/nginx
+      tags: web_nginx
+    - role: web/nodejs
+      tags: web_nodejs
+    # - role: web/php5
+      # tags: web_php5
+    # - role: web/varnish
+      # tags: web_varnish
+    # - role: networking/transmission
+      # tags: networking_transmission
+    - role: networking/openvpn
+      tags: networking_openvpn
+    # - role: networking/avahi
+      # tags: networking_avahi
+    # - role: networking/btsync
+      # tags: networking_btsync

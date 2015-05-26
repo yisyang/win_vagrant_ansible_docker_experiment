@@ -1,0 +1,9 @@
+---
+# File: main.yml
+# Type: handler
+# Part: Nginx
+
+- include: init.yml
+  when: not docker
+- include: supervisor.yml
+  when: docker
