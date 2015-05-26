@@ -31,7 +31,7 @@ if [ ! -f /vagrant/$ANSIBLE_PLAYBOOK ]; then
 fi
 
 # Install Ansible and its dependencies if it's not installed already.
-if [ ! -f /usr/bin/ansible && ! -f /usr/local/bin/ansible ]; then
+if [ ! -f /usr/bin/ansible ] && [ ! -f /usr/local/bin/ansible ]; then
   echo "Installing Ansible dependencies and Git."
   if [[ ! -z $YUM ]]; then
     yum install -y git python python-devel
@@ -54,6 +54,8 @@ if [ ! -f /usr/bin/ansible && ! -f /usr/local/bin/ansible ]; then
 
   echo "Installing Ansible."
   pip install ansible
+else
+  echo "Ansible installed"
 fi
 
 # Install Ansible roles from requirements file, if available.
