@@ -25,7 +25,7 @@
 - name: Bootstrap | create group admin
   action: group name=admin
 - name: Bootstrap | create custom user
-  user: name={{ custom_user }} group=admin state=present
+  user: name={{ custom_user }} group=admin shell=/bin/bash state=present
 - name: Bootstrap | set custom user key
   authorized_key: user={{ custom_user }} key="{{ lookup('file', custom_user_pubkey) }}"
 - name: Bootstrap | add custom user to admin group
