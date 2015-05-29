@@ -9,6 +9,13 @@ allow for a quick and complete development environment setup **on any OS** inclu
 - git integration
 
 
+# Pre-requisites
+
+1. Vagrant
+2. Virtual Box
+	Note: On access restricted machines, the default installation options may fail. Unchecking bridge mode network driver solved it me with the "caveat" of not being able to open up VMs to the outside.
+
+
 # Sources
 
 Most of the scripts used here can be found in their original states from the following sources:
