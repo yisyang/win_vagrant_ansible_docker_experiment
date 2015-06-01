@@ -20,6 +20,9 @@ fi
 
 ROLE_REQUIREMENTS=$(find /vagrant/$PLAYBOOK_DIR -name "requirements.yml" -o -name "requirements.txt")
 
+# If true, will re-run requirements on each provisioning, if false, will only run requirements when installing ansible
+RERUN_REQUIREMENTS=false
+
 # Detect package management system.
 YUM=$(which yum)
 APT_GET=$(which apt-get)
@@ -29,6 +32,8 @@ if [ ! -f /vagrant/$ANSIBLE_PLAYBOOK ]; then
   echo "Cannot find Ansible playbook."
   exit 1
 fi
+
+echo "Windows machine detected, will run Ansible locally on guest machine"
 
 # Install Ansible and its dependencies if it's not installed already.
 if [ ! -f /usr/bin/ansible ] && [ ! -f /usr/local/bin/ansible ]; then
@@ -54,12 +59,17 @@ if [ ! -f /usr/bin/ansible ] && [ ! -f /usr/local/bin/ansible ]; then
 
   echo "Installing Ansible."
   pip install ansible
+
+  RUN_REQUIREMENTS=true
 else
-  echo "Ansible installed"
+  echo "Ansible is available"
+
+  RUN_REQUIREMENTS=$RERUN_REQUIREMENTS
 fi
 
 # Install Ansible roles from requirements file, if available.
-if [ -f "$ROLE_REQUIREMENTS" ]; then
+if [ -f "$ROLE_REQUIREMENTS" ] && $RUN_REQUIREMENTS; then
+  echo "Installing Ansible requirements"
   echo "Found Ansible role file at $ROLE_REQUIREMENTS"
   sudo ansible-galaxy install -r "${ROLE_REQUIREMENTS}"
 fi
