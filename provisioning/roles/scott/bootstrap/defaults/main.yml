@@ -4,4 +4,6 @@
 # Part: Scott/Bootstrap
 
 custom_user: "scott"
-custom_user_pubkey: "pubkey.rsa"
+custom_user_pubkey: "pubkey"
+custom_user_bashrc: ".bashrc"
+custom_user_vimrc: ".vimrc"

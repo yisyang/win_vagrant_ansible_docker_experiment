@@ -1,2 +1,0 @@
-postfix/mailname string example.com
-postfix/main_mailer_type string 'Your Vagrant Box'
