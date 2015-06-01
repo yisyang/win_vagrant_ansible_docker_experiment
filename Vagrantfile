@@ -15,8 +15,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
     config.vm.box = "ubuntu/trusty64"
-    # config.vm.box = "trusty64"
-    # config.vm.box_url = "https://vagrantcloud.com/ubuntu/boxes/trusty64/versions/14.04/providers/virtualbox.box"
+#     config.vm.box = "trusty64"
+#     config.vm.box_url = "https://vagrantcloud.com/ubuntu/boxes/trusty64/versions/14.04/providers/virtualbox.box"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -79,9 +79,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # SHELL
   
   # Enable provisioning with ansible
-    # config.vm.provision "ansible" do |ansible|
-        # ansible.playbook = "playbook.yml"
-    # end
+#     config.vm.provision "ansible" do |ansible|
+#         ansible.playbook = "playbook.yml"
+#     end
 
     # Use rbconfig to determine if we're on a windows host or not.
     require 'rbconfig'
@@ -91,14 +91,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         config.vm.provision "shell" do |sh|
             sh.path = "provisioning/jjgaw/windows.sh"
             sh.args = "provisioning/full_playbook.yml"
-#            sh.args = "provisioning/full_playbook.yml scott_bootstrap"
+#             sh.args = "provisioning/full_playbook.yml scott_bootstrap"
         end
     else
         # Provisioning configuration for Ansible (for Mac/Linux hosts).
         config.vm.provision "ansible" do |ansible|
             ansible.playbook = "provisioning/full_playbook.yml"
             ansible.sudo = true
-#            ansible.tags = "scott_bootstrap"
+#             ansible.tags = "scott_bootstrap"
         end
     end
 end
