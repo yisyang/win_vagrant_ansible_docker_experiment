@@ -1,30 +1,25 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Maintainer: 
+" Modified by:
+"       Scott Yang <programmerscott@gmail.com>
+"
+" Modified Date:
+"       2015-06-08
+"
+" Original by:
 "       Amir Salihefendic
 "       http://amix.dk - amix@amix.dk
 "
-" Version: 
+" Original Version:
 "       5.0 - 29/05/12 15:43:36
 "
-" Blog_post: 
+" Links:
 "       http://amix.dk/blog/post/19691#The-ultimate-Vim-configuration-on-Github
-"
-" Awesome_version:
-"       Get this config, nice color schemes and lots of plugins!
-"
-"       Install the awesome version from:
-"
-"           https://github.com/amix/vimrc
-"
-" Syntax_highlighted:
-"       http://amix.dk/vim/vimrc.html
-"
-" Raw_version: 
-"       http://amix.dk/vim/vimrc.txt
+"       https://github.com/amix/vimrc
 "
 " Sections:
 "    -> General
 "    -> VIM user interface
+"    -> Mouse
 "    -> Colors and Fonts
 "    -> Files and backups
 "    -> Text, tab and indent related
@@ -32,10 +27,7 @@
 "    -> Moving around, tabs and buffers
 "    -> Status line
 "    -> Editing mappings
-"    -> vimgrep searching and cope displaying
-"    -> Spell checking
 "    -> Misc
-"    -> Helper functions
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -44,11 +36,7 @@
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
-set history=700
-
-" Enable filetype plugins
-filetype plugin on
-filetype indent on
+set history=500
 
 " Set to auto read when a file is changed from the outside
 set autoread
@@ -102,11 +90,6 @@ set hid
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
-" In many terminal emulators the mouse works just fine, thus enable it.
-if has('mouse')
-  set mouse=a
-endif
-
 " Ignore case when searching
 set ignorecase
 
@@ -138,6 +121,25 @@ set tm=500
 
 " Add a bit extra margin to the left
 set foldcolumn=1
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Mouse
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Allow toggling between terminal and vim mouse
+if has('mouse')
+    map <silent><F12> :let &mouse=(&mouse == "a"?"":"a")<CR>:call ShowMouseMode()<CR>
+    imap <silent><F12> :let &mouse=(&mouse == "a"?"":"a")<CR>:call ShowMouseMode()<CR>
+"    set mouse=a
+endif
+
+function ShowMouseMode()
+    if (&mouse == 'a')
+        echo "mouse-vim"
+    else
+        echo "mouse-xterm"
+    endif
+endfunction
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -181,32 +183,27 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" All features disabled as I use modern IDEs nowadays and it
+" is actually easier to work with basic configs than to deal
+" with paste mode
+
 " Use spaces instead of tabs
-set expandtab
+" set expandtab
 
 " Be smart when using tabs ;)
-set smarttab
+" set smarttab
 
 " 1 tab == 4 spaces
-set shiftwidth=4
-set tabstop=4
+" set shiftwidth=4
+" set tabstop=4
 
 " Linebreak on 500 characters
-set lbr
-set tw=500
+" set lbr
+" set tw=500
 
-set ai "Auto indent
-set si "Smart indent
-set wrap "Wrap lines
-
-
-""""""""""""""""""""""""""""""
-" => Visual mode related
-""""""""""""""""""""""""""""""
-" Visual mode pressing * or # searches for the current selection
-" Super useful! From an idea by Michael Naumann
-vnoremap <silent> * :call VisualSelection('f', '')<CR>
-vnoremap <silent> # :call VisualSelection('b', '')<CR>
+" set ai "Auto indent
+" set si "Smart indent
+" set wrap "Wrap lines
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -278,7 +275,7 @@ set viminfo^=%
 set laststatus=2
 
 " Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
+set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ \ Col:\ %c
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -311,49 +308,6 @@ autocmd BufWrite *.coffee :call DeleteTrailingWS()
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Ack searching and cope displaying
-"    requires ack.vim - it's much better than vimgrep/grep
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" When you press gv you Ack after the selected text
-vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
-
-" Open Ack and put the cursor in the right position
-map <leader>g :Ack 
-
-" When you press <leader>r you can search and replace the selected text
-vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
-
-" Do :help cope if you are unsure what cope is. It's super useful!
-"
-" When you search with Ack, display your results in cope by doing:
-"   <leader>cc
-"
-" To go to the next search result do:
-"   <leader>n
-"
-" To go to the previous search results do:
-"   <leader>p
-"
-map <leader>cc :botright cope<cr>
-map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
-map <leader>n :cn<cr>
-map <leader>p :cp<cr>
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Spell checking
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Pressing ,ss will toggle and untoggle spell checking
-map <leader>ss :setlocal spell!<cr>
-
-" Shortcuts using <leader>
-map <leader>sn ]s
-map <leader>sp [s
-map <leader>sa zg
-map <leader>s? z=
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remove the Windows ^M - when the encodings gets messed up
@@ -369,38 +323,9 @@ map <leader>x :e ~/buffer.md<cr>
 map <leader>pp :setlocal paste!<cr>
 
 
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! CmdLine(str)
-    exe "menu Foo.Bar :" . a:str
-    emenu Foo.Bar
-    unmenu Foo
-endfunction 
-
-function! VisualSelection(direction, extra_filter) range
-    let l:saved_reg = @"
-    execute "normal! vgvy"
-
-    let l:pattern = escape(@", '\\/.*$^~[]')
-    let l:pattern = substitute(l:pattern, "\n$", "", "")
-
-    if a:direction == 'b'
-        execute "normal ?" . l:pattern . "^M"
-    elseif a:direction == 'gv'
-        call CmdLine("Ack \"" . l:pattern . "\" " )
-    elseif a:direction == 'replace'
-        call CmdLine("%s" . '/'. l:pattern . '/')
-    elseif a:direction == 'f'
-        execute "normal /" . l:pattern . "^M"
-    endif
-
-    let @/ = l:pattern
-    let @" = l:saved_reg
-endfunction
-
 
 " Returns true if paste mode is enabled
 function! HasPaste()

@@ -30,10 +30,10 @@
 
 # Transfer user preferences
 - name: Bootstrap | Bash | transfer .bashrc
-  copy: src={{ custom_user_bashrc }} dest=/home/{{ custom_user }}/.bashrc
+  copy: src={{ custom_user_bashrc }} dest=/home/{{ custom_user }}/.bashrc owner={{ custom_user }} group=admin
   when: new_user.changed
 - name: Bootstrap | Vim | transfer .vimrc
-  copy: src={{ custom_user_vimrc }} dest=/home/{{ custom_user }}/.vimrc
+  copy: src={{ custom_user_vimrc }} dest=/home/{{ custom_user }}/.vimrc owner={{ custom_user }} group=admin
   when: new_user.changed
 - name: Bootstrap | Vim | create dir ~/.vim
   file: dest=/home/{{ custom_user }}/.vim state=directory owner={{ custom_user }} group=admin
