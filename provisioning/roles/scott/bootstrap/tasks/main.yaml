@@ -15,7 +15,7 @@
   user: name={{ custom_user }} group=admin shell=/bin/bash state=present
   register: new_user
 - name: Bootstrap | User | set custom user key
-  authorized_key: user={{ custom_user }} key="{{ lookup('file', 'custom_user_pubkey') }}"
+  authorized_key: user={{ custom_user }} key="{{ lookup('file', 'custom_user_sshkey') }}"
   when: new_user.changed
   ignore_errors: True
 - name: Bootstrap | User | add custom user to admin group
@@ -46,6 +46,18 @@
   when: new_user.changed
 - name: Bootstrap | Vim | transfer colorscheme - GRB 256
   copy: src=grb256.vim dest=/home/{{ custom_user }}/.vim/colors/grb256.vim
+  when: new_user.changed
+
+# Transfer git config and key
+- name: Bootstrap | User | set custom git config
+  copy: src={{ custom_user_gitconfig }} dest=/home/{{ custom_user }}/.gitconfig
+  when: new_user.changed
+- name: Bootstrap | User | set custom git key
+  copy: src={{ custom_user_gitkey }} dest=/home/{{ custom_user }}/.ssh/GitKey
+  when: new_user.changed
+# Transfer ssh config to use various keys
+- name: Bootstrap | User | set custom ssh config
+  copy: src={{ custom_user_sshconfig }} dest=/home/{{ custom_user }}/.ssh/config
   when: new_user.changed
 
 # Reboot
