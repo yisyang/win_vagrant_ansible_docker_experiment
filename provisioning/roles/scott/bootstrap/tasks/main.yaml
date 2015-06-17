@@ -53,7 +53,7 @@
   copy: src={{ custom_user_gitconfig }} dest=/home/{{ custom_user }}/.gitconfig
   when: new_user.changed
 - name: Bootstrap | User | set custom git key
-  copy: src={{ custom_user_gitkey }} dest=/home/{{ custom_user }}/.ssh/GitKey
+  copy: src={{ custom_user_gitkey }} dest=/home/{{ custom_user }}/.ssh/GitKey mode=0600
   when: new_user.changed
 # Transfer ssh config to use various keys
 - name: Bootstrap | User | set custom ssh config
