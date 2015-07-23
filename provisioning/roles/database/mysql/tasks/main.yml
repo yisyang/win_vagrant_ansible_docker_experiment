@@ -49,3 +49,4 @@
 ## Check service
 - name: MySQL | Check service daemon
   service: name=mysql state=started
+  ignore_errors: true

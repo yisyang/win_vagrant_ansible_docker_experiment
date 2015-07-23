@@ -4,17 +4,14 @@
 # have to change the VirtualHost statement in
 # /etc/apache2/sites-enabled/000-default
 
-NameVirtualHost {{ apache2_bind_address | default('*') }}:{{ apache_port_http | default('80') }}
 Listen {{ apache2_bind_address | default('*') }}:{{ apache_port_http | default('80') }}
 
 # ssl_module >= 13.10
 <IfModule mod_ssl.c>
-  NameVirtualHost {{ apache2_bind_address | default('*') }}:{{ apache_port_https | default('443') }}
   Listen {{ apache2_bind_address | default('*') }}:{{ apache_port_https | default('443') }}
 </IfModule>
 
 <IfModule mod_gnutls.c>
-  NameVirtualHost {{ apache2_bind_address | default('*') }}:{{ apache_port_https | default('443') }}
   Listen {{ apache2_bind_address | default('*') }}:{{ apache_port_https | default('443') }}
 </IfModule>
 

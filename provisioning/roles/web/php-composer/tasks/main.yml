@@ -1,0 +1,27 @@
+---
+# File: main.yml
+# Type: task
+# Part: Web/Php-Composer
+
+- name: Web | PHP | Composer | Detects if composer is installed
+  shell: "which composer"
+  ignore_errors: true
+  register: composer_exists
+
+- name: Web | PHP | Composer | Create composer directory
+  file: dest=/home/{{ ssh_user }}/.composer state=directory owner={{ ssh_user }} group={{ ssh_user_group }}
+
+- name: Web | PHP | Composer | Patch composer config
+  copy: src=composer-config.json dest=/home/{{ ssh_user }}/.composer/config.json owner={{ ssh_user }} group={{ ssh_user_group }}
+
+- name: Web | PHP | Composer | Installs composer
+  shell: >
+    curl -sS https://getcomposer.org/installer | php
+    creates={{ composer_path }}
+  when: composer_exists.stdout == ""
+
+- name: Web | PHP | Composer | Move Composer into globally-accessible location
+  shell: >
+    mv composer.phar {{ composer_path }}
+    creates={{ composer_path }}
+  when: composer_exists.stdout == ""

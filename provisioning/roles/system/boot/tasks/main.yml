@@ -1,7 +1,7 @@
 ---
 # File: main.yml
 # Type: task
-# Part: Boot
+# Part: System/Boot
 
 ## Grub
 - name: Boot | Configure grub

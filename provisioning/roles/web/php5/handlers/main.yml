@@ -6,9 +6,16 @@
 
 - name: start apache2
   service: name=apache2 start=started
+  ignore_errors: true
 
 - name: restart apache2
   service: name=apache2 state=restarted
+  ignore_errors: true
 
 - name: reload apache2
   service: name=apache2 state=reloaded
+  ignore_errors: true
+
+- name: stop apache2
+  service: name=apache2 state=stopped
+  ignore_errors: true

@@ -1,7 +1,0 @@
----
-# File: main.yml
-# Type: handler
-# Part: Scott/Bootstrap
-
-- name: Restart sshd
-  action: service sshd state=restarted

@@ -1,0 +1,6 @@
+---
+# File: main.yml
+# Type: defaults
+# Part: Web/Php-Composer
+
+composer_path: "/usr/local/bin/composer"

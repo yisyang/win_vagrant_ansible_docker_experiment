@@ -14,8 +14,8 @@ nginx_port_http: 80
 nginx_port_https: 443
 
 # User and group
-nginx_user: "www-data"
-nginx_group: "www-data"
+nginx_user: "{{ web_user }}"
+nginx_group: "{{ web_user_group }}"
 
 # Default base directory (without trailing '/')
 nginx_path: "/var/www"

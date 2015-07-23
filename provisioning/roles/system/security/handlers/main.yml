@@ -1,0 +1,7 @@
+---
+# File: main.yml
+# Type: handler
+# Part: System/Security
+
+- name: Restart sshd
+  service: name=ssh state=restarted

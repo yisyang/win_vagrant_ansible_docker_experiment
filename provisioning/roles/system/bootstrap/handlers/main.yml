@@ -1,0 +1,7 @@
+---
+# File: main.yml
+# Type: handler
+# Part: System/Bootstrap
+
+- name: Restart sshd
+  action: service sshd state=restarted

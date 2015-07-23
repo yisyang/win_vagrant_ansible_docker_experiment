@@ -34,7 +34,6 @@
   when: result|changed
 
 ## Configure service
-# added by Scott to resolve problematic when not condition
 - name: Nginx | Set playbook boolean variables
   set_fact:
     nginx_configure_docker_gen: false

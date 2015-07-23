@@ -1,0 +1,44 @@
+---
+# File: checkout.yml
+# Type: task
+# Part: App/Main
+
+- name: App | Main | Create required project directories
+  file: dest={{ item.dest }} state=directory owner={{ item.owner }} group={{ item.group }}
+  with_items: git_app_repos
+  when: git_app_repos is defined
+
+- name: App | Main | Checkout private repos from Git
+  git: >-
+    repo={{ item.repo }}
+    version={{ item.version }}
+    dest={{ item.dest }}
+    update={{ item.update_to_latest }}
+    force={{ item.force }}
+    key_file={{ item.key_file }}
+    accept_hostkey=true
+  with_items: git_app_repos
+  when: git_app_repos is defined and item.key_file is defined
+  ignore_errors: true
+
+- name: App | Main | Checkout public repos from Git
+  git: >-
+    repo={{ item.repo }}
+    version={{ item.version }}
+    dest={{ item.dest }}
+    update={{ item.update_to_latest }}
+    force={{ item.force }}
+    accept_hostkey=true
+  with_items: git_app_repos
+  when: git_app_repos is defined and not item.key_file is defined
+  ignore_errors: true
+
+- name: App | Main | Ensure that project files are owned by correct users and groups
+  file: dest={{ item.dest }} state=directory owner={{ item.owner }} group={{ item.group }}
+  with_items: git_app_repos
+  when: git_app_repos is defined
+
+- name: App | Main | Create project links
+  file: src="{{ item.dest }}" dest="{{ item.link }}" state=link
+  with_items: git_app_repos
+  when: item.link is defined

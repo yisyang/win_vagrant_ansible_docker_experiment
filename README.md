@@ -13,22 +13,28 @@ allow for a quick and complete development environment setup **on any OS** inclu
 
 1. Vagrant
 2. Virtual Box
-	Note: On access restricted machines, the default installation options may fail. Unchecking bridge mode network driver solved it me with the "caveat" of not being able to open up VMs to the outside.
-3. Insert appropriate files (such as public key) in scott bootstrap files, or comment out scott_bootstrap section
-	Note: After doing much research, Ansible V1 has a "won't fix" bug related to fatal error caused by failing lookup(), ignore_errors won't work in this case, and there won't be try catch until V2.
+    - Note: On access restricted machines, the default installation options may fail. Unchecking bridge mode network driver solved it me, with the following caveats:
+        - Vagrant public_network option is not available
+        - WiFi may not work while the VirtualBox Host-Only Adapter is enabled
+3. Configure and run script
+    - Make a copy of ./provisioning/vars/config-main-EXAMPLE.yml as config-main.yml, read and edit
+    - Copy appropriate files (such as ssh_user_sshkey and ssh_user_gitkey) into ./provisioning/files/
+    - vagrant up
 
 
 # Sources
 
-Most of the scripts used here can be found in their original states from the following sources:
+#### Ansible
 
-Ansible:
+- https://github.com/geerlingguy/JJG-Ansible-Windows
+    - Vagrant shell provisioner for running Ansible on guest machine, as a hack to make Ansible "work on Windows"
+    - license: https://github.com/geerlingguy/JJG-Ansible-Windows/blob/master/LICENSE
+- https://github.com/mgcrea/ansible-web-playbooks
+    - Original source of the roles used in this playbook
+    - license: https://github.com/mgcrea/ansible-web-playbooks/blob/master/LICENSE.md
+- https://github.com/Traackr/ansible-elasticsearch#license
+    - Role for installing ElasticSearch, supports various linux distros, also supports AWS EC2
+    - license: https://github.com/Traackr/ansible-elasticsearch#license
 
-https://github.com/geerlingguy/JJG-Ansible-Windows
-
-https://github.com/mgcrea/ansible-web-playbooks
-
-https://github.com/pvillega/ansible-ec2-play
-
-Docker:
-TBD
+#### Docker
+- TBD

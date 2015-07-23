@@ -1,0 +1,10 @@
+---
+# File: main.yml
+# Type: task
+# Part: App/Main
+
+# Resolve dependencies
+- include: dependencies.yml
+
+# Checkout apps
+- include: checkout.yml

@@ -13,8 +13,8 @@ apache2_port_http: 80
 apache2_port_https: 443
 
 # User and group
-apache2_user: "www-data"
-apache2_group: "www-data"
+apache2_user: "{{ web_user }}"
+apache2_group: "{{ web_user_group }}"
 
 # Default base directory (without trailing '/')
 apache2_path: "/var/www"

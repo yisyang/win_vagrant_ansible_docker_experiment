@@ -12,8 +12,38 @@ php5_apt_modules:
   - libssh2-php
   - php-apc
   - php-pear
+  - php-soap
+  - php5-apcu
+  - php5-cli
+  - php5-common
   - php5-curl
+  - php5-dev
+  - php5-fpm
   - php5-gd
+  - php5-gmp
   - php5-imagick
+  - php5-imap
+  - php5-intl
+  - php5-ldap
   - php5-mcrypt
-  - php5-mysql
+  - php5-memcached
+  - php5-msgpack
+  - php5-mysqlnd
+  - php5-oauth
+  - php5-odbc
+  - php5-pspell
+  - php5-redis
+  - php5-sqlite
+  - php5-sybase
+  - php5-tidy
+  - php5-xdebug
+  - php5-xmlrpc
+  - php5-xsl
+
+php5_pecl_extensions:
+  - igbinary
+  - jsonc
+  - zip
+
+php5_modules_to_enable:
+  - mcrypt

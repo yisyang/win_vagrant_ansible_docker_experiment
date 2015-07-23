@@ -1,0 +1,14 @@
+---
+# File: main.yml
+# Type: defaults
+# Part: System/Bootstrap
+
+ssh_user_bashrc: ".bashrc"
+ssh_user_vimrc: "vim/.vimrc"
+
+vim_colors_to_copy:
+  - ir_black
+  - grb256
+  - base16-default
+  - base16-mocha
+  - base16-railscasts
