@@ -38,15 +38,6 @@
   vars_files:
     - vars/config-main.yml
 
-#- name: Register second disk
-#  hosts: all
-#  sudo: yes
-#  tags:
-#    - custom
-#    - custom_disk
-#  roles:
-#    - role: system/seconddisk
-
 - name: Install various web dependencies
   hosts: all
   sudo: yes
