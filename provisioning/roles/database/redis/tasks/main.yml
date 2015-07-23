@@ -24,7 +24,7 @@
 ## Configure Redis
 - name: Redis | Backup configuration
   shell: creates=/etc/redis/redis.conf.orig cp /etc/redis/redis.conf /etc/redis/redis.conf.orig
-  ignore_errors: True
+  ignore_errors: true
   register: result
 - fetch: src=/etc/redis/redis.conf.orig dest=fetched
   when: result|changed

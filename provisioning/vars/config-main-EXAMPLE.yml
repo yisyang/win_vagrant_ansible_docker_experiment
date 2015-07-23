@@ -8,7 +8,6 @@ ssh_user_reset: false # true to re-provision all user settings (bash, vim, git, 
 
 ssh_user_sshkey: "files/pubkey" # Path to your OpenSSH public key that you would like to add into ~/authorized_keys
 #ssh_user_password: "dontneedone"
-ssh_user_sshconfig: "files/sshconfig"
 
 # System / Web
 web_user: "www" # If developing from remote machine, you will be using this user to do sftp
@@ -21,7 +20,10 @@ ssh_user_git_name: "Scott Yang"
 ssh_user_git_email: "yisyang@gmail.com"
 ssh_user_gitconfig: "files/.gitconfig"
 ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, assuming not password protected
-#ssh_user_gitkey_dest: "/home/{{ ssh_user }}/.ssh/gitkey" # If defined, the git key will be copied into this destination on the provisioned machines
+# If defined, the git key will be copied into this destination on the provisioned machines
+# SSH config will be modified accordingly to use this key for github.com
+# Can be helpful if you plan to use git directly on the provisioned machines
+#ssh_user_gitkey_dest: "/home/{{ ssh_user }}/.ssh/gitkey"
 
 # App / Git
 git_app_repos:

@@ -14,7 +14,7 @@
   when: result | changed
 - name: Redis | ARM | Check version
   shell: redis-server --version | cut -c 16-20
-  ignore_errors: True
+  ignore_errors: true
   register: redis_version
 - name: Redis | ARM | Make package
   when: redis_version.stdout != '2.8.6'

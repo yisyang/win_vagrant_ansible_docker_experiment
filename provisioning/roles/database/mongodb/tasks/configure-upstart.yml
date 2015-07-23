@@ -5,7 +5,7 @@
 
 - name: MongoDB | Backup service configuration
   shell: creates=/etc/init/{{ mongodb_service }}.conf.orig.disabled cp /etc/init/{{ mongodb_service }}.conf /etc/init/{{ mongodb_service }}.conf.orig.disabled
-  ignore_errors: True
+  ignore_errors: true
   register: result
 - fetch: src=/etc/init/{{ mongodb_service }}.conf.orig.disabled dest=fetched
   when: result|changed

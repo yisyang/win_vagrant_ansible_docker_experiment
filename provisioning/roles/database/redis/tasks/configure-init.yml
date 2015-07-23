@@ -5,7 +5,7 @@
 
 - name: Redis | Backup service configuration
   shell: creates=/etc/init.d/redis-server.orig.disabled cp /etc/init.d/redis-server /etc/init.d/redis-server.orig.disabled
-  ignore_errors: True
+  ignore_errors: true
   register: result
 - fetch: src=/etc/init.d/redis-server.orig.disabled dest=fetched
   when: result|changed

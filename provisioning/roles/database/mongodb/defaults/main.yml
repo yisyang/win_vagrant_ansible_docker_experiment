@@ -6,7 +6,7 @@
 # Aptitude state
 mongodb_apt_state: "latest"
 mongodb_apt_flavor: "org" # org|10gen
-mongodb_backup: False
+mongodb_backup: false
 
 # Network configuration
 mongodb_bind_address: "0.0.0.0"

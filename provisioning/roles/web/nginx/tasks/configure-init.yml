@@ -5,7 +5,7 @@
 
 - name: Nginx | Backup service configuration
   shell: creates=/etc/init.d/nginx.orig.disabled cp /etc/init.d/nginx /etc/init.d/nginx.orig.disabled
-  ignore_errors: True
+  ignore_errors: true
   register: result
 - fetch: src=/etc/init.d/nginx.orig.disabled dest=fetched
   when: result|changed

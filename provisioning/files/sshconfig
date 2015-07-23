@@ -1,4 +1,0 @@
-host github.com
-  HostName github.com
-  IdentityFile ~/.ssh/gitkey
-  User git

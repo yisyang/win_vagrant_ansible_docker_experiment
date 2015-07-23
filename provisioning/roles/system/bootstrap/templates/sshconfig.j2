@@ -1,0 +1,6 @@
+{% if ssh_user_gitkey_dest is defined %}
+host github.com
+  HostName github.com
+  IdentityFile {{ ssh_user_gitkey_dest }}
+  User git
+{% endif %}

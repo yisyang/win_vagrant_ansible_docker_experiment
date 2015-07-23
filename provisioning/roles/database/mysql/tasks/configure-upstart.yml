@@ -5,7 +5,7 @@
 
 - name: MySQL | Upstart | Backup service configuration
   shell: creates=/etc/init/{{ mysql_service }}.conf.orig.disabled cp /etc/init/{{ mysql_service }}.conf /etc/init/{{ mysql_service }}.conf.orig.disabled
-  ignore_errors: True
+  ignore_errors: true
   register: result
 - fetch: src=/etc/init/{{ mysql_service }}.conf.orig.disabled dest=fetched
   when: result|changed

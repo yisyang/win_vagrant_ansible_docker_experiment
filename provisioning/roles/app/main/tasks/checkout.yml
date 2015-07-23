@@ -8,7 +8,7 @@
   with_items: git_app_repos
   when: git_app_repos is defined
 
-- name: App | Main | Checkout private repos from Git
+- name: App | Main | Checkout repos from Git
   git: >-
     repo={{ item.repo }}
     version={{ item.version }}
@@ -19,18 +19,6 @@
     accept_hostkey=true
   with_items: git_app_repos
   when: git_app_repos is defined and item.key_file is defined
-  ignore_errors: true
-
-- name: App | Main | Checkout public repos from Git
-  git: >-
-    repo={{ item.repo }}
-    version={{ item.version }}
-    dest={{ item.dest }}
-    update={{ item.update_to_latest }}
-    force={{ item.force }}
-    accept_hostkey=true
-  with_items: git_app_repos
-  when: git_app_repos is defined and not item.key_file is defined
   ignore_errors: true
 
 - name: App | Main | Ensure that project files are owned by correct users and groups
