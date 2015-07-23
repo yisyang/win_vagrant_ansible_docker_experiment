@@ -45,8 +45,18 @@
   when: result|changed
 
 # Best practices from https://github.com/h5bp/server-configs
-- name: Apache2 | Boilerplate configuration
-  template: src={{ item }}.j2 dest=/etc/apache2/conf.d/{{ item }} owner=root group=root mode=0644 backup=no
+- name: Apache2 | Boilerplate configuration files
+  template: src={{ item }}.j2 dest=/etc/apache2/conf-available/{{ item }} owner=root group=root mode=0644 backup=no
+  with_items:
+    - bp_cors.conf
+    - bp_deflate.conf
+    - bp_headers.conf
+    - bp_mime.conf
+    - bp_rewrite.conf
+    - bp_security.conf
+
+- name: Apache2 | Boilerplate configuration links
+  file: src=/etc/apache2/conf-available/{{ item }} dest=/etc/apache2/conf-enabled/{{ item }} state=link
   with_items:
     - bp_cors.conf
     - bp_deflate.conf
