@@ -9,10 +9,10 @@
   register: composer_exists
 
 - name: Web | PHP | Composer | Create composer directory
-  file: dest=/home/{{ ssh_user }}/.composer state=directory owner={{ ssh_user }} group={{ ssh_user_group }}
+  file: dest=/home/{{ ssh_user }}/.composer state=directory owner={{ ssh_user }} group={{ ssh_user }}
 
 - name: Web | PHP | Composer | Patch composer config
-  copy: src=composer-config.json dest=/home/{{ ssh_user }}/.composer/config.json owner={{ ssh_user }} group={{ ssh_user_group }}
+  copy: src=composer-config.json dest=/home/{{ ssh_user }}/.composer/config.json owner={{ ssh_user }} group={{ ssh_user }}
 
 - name: Web | PHP | Composer | Installs composer
   shell: >

@@ -48,31 +48,31 @@
 
 # Transfer ssh user preferences
 - name: Bootstrap | User | Bash | Transfer .bashrc
-  copy: src={{ ssh_user_bashrc }} dest=/home/{{ ssh_user }}/.bashrc owner={{ ssh_user }} group={{ ssh_user_group }}
+  copy: src={{ ssh_user_bashrc }} dest=/home/{{ ssh_user }}/.bashrc owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset == true or new_user.changed
 - name: Bootstrap | User | Vim | Transfer .vimrc
-  copy: src={{ ssh_user_vimrc }} dest=/home/{{ ssh_user }}/.vimrc owner={{ ssh_user }} group={{ ssh_user_group }}
+  copy: src={{ ssh_user_vimrc }} dest=/home/{{ ssh_user }}/.vimrc owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset == true or new_user.changed
 - name: Bootstrap | User | Vim | Create dir ~/.vim
-  file: dest=/home/{{ ssh_user }}/.vim state=directory owner={{ ssh_user }} group={{ ssh_user_group }}
+  file: dest=/home/{{ ssh_user }}/.vim state=directory owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset == true or new_user.changed
 - name: Bootstrap | User | Vim | Create dir ~/.vim/colors
-  file: dest=/home/{{ ssh_user }}/.vim/colors state=directory owner={{ ssh_user }} group={{ ssh_user_group }}
+  file: dest=/home/{{ ssh_user }}/.vim/colors state=directory owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset == true or new_user.changed
 - name: Bootstrap | User | Vim | Transfer colorschemes
-  copy: src=vim/{{ item }}.vim dest=/home/{{ ssh_user }}/.vim/colors/{{ item }}.vim owner={{ ssh_user }} group={{ ssh_user_group }}
+  copy: src=vim/{{ item }}.vim dest=/home/{{ ssh_user }}/.vim/colors/{{ item }}.vim owner={{ ssh_user }} group={{ ssh_user }}
   with_items: vim_colors_to_copy
   when: ssh_user_reset == true or new_user.changed and vim_colors_to_copy is defined
 - name: Bootstrap | User | SSH | Set ssh user ssh config
-  copy: src={{ ssh_user_sshconfig }} dest=/home/{{ ssh_user }}/.ssh/config owner={{ ssh_user }} group={{ ssh_user_group }}
+  copy: src={{ ssh_user_sshconfig }} dest=/home/{{ ssh_user }}/.ssh/config owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset == true or new_user.changed
 
 # Transfer ssh config to use various keys
 - name: Bootstrap | User | Git | Set ssh user git config
-  template: src=gitconfig.j2 dest=/home/{{ ssh_user }}/.gitconfig owner={{ ssh_user }} group={{ ssh_user_group }} mode=0644 backup=no
+  template: src=gitconfig.j2 dest=/home/{{ ssh_user }}/.gitconfig owner={{ ssh_user }} group={{ ssh_user }} mode=0644 backup=no
   when: ssh_user_reset == true or new_user.changed
 - name: Bootstrap | User | Git | Copy ssh user git key
-  copy: src={{ ssh_user_gitkey }} dest={{ ssh_user_gitkey_dest }} mode=0600 owner={{ ssh_user }} group={{ ssh_user_group }}
+  copy: src={{ ssh_user_gitkey }} dest={{ ssh_user_gitkey_dest }} mode=0600 owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_gitkey_dest is defined and ssh_user_gitkey_dest != "" and (ssh_user_reset == true or new_user.changed)
 
 # Create web user and group
