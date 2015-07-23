@@ -9,7 +9,7 @@ allow for a quick and complete development environment setup **on any OS** inclu
 - git integration
 
 
-# Pre-requisites
+## Pre-requisites
 
 1. Vagrant
 2. Virtual Box
@@ -22,7 +22,7 @@ allow for a quick and complete development environment setup **on any OS** inclu
     - vagrant up
 
 
-# Sources
+## Sources
 
 #### Ansible
 
@@ -38,3 +38,6 @@ allow for a quick and complete development environment setup **on any OS** inclu
 
 #### Docker
 - TBD
+
+## License
+MIT (https://github.com/yisyang/win_vagrant_ansible_docker_experiment/blob/master/LICENSE)
