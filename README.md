@@ -35,9 +35,15 @@ allow for a quick and complete development environment setup **on any OS** inclu
 - https://github.com/Traackr/ansible-elasticsearch#license
     - Role for installing ElasticSearch, supports various linux distros, also supports AWS EC2
     - license: https://github.com/Traackr/ansible-elasticsearch#license
+- https://gist.github.com/mrlesmithjr/0859ffa8ec0e40a878b2
+    - Role for registering second disk after creating it in vagrant
+    - license: not specified
 
 #### Docker
 - TBD
 
 ## License
-MIT (https://github.com/yisyang/win_vagrant_ansible_docker_experiment/blob/master/LICENSE)
+- roles/system/seconddisk
+    - Contact original author (https://gist.github.com/mrlesmithjr/0859ffa8ec0e40a878b2)
+- Everything else
+    - MIT (https://github.com/yisyang/win_vagrant_ansible_docker_experiment/blob/master/LICENSE)
