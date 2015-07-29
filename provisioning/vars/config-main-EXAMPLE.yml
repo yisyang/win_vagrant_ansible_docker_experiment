@@ -18,8 +18,7 @@ web_user_sshkey: "{{ ssh_user_sshkey }}"
 # System / Git
 ssh_user_git_name: "Scott Yang"
 ssh_user_git_email: "yisyang@gmail.com"
-ssh_user_gitconfig: "files/.gitconfig"
-ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, assuming not password protected
+ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, not password protected, and MUST chmod to 0600
 # If defined, the git key will be copied into this destination on the provisioned machines
 # SSH config will be modified accordingly to use this key for github.com
 # Can be helpful if you plan to use git directly on the provisioned machines
@@ -28,10 +27,11 @@ ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, assumin
 # App / Git
 git_app_repos:
   - repo: "git@github.com:yisyang/win_vagrant_ansible_docker_experiment.git"
+    key_file: "{{ ssh_user_gitkey }}"
     version: "master"
-    dest: "/home/{{ ssh_user }}/win_vagrant_ansible_docker_experiment"
-    owner: "{{ ssh_user }}"
-    group: "{{ ssh_user }}"
+    dest: "/home/{{ web_user }}/win_vagrant_ansible_docker_experiment"
+    owner: "{{ web_user }}"
+    group: "{{ web_user_group }}"
     update_to_latest: true # Avoiding the key "update" as it causes a conflict with using with_items
     force: true
     link: "/home/{{ ssh_user }}/link_to_win_vagrant_ansible_docker_experiment"

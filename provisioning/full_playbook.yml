@@ -29,8 +29,8 @@
   tags:
     - system
   roles:
-    - role: system/boot # System bootloader
-      tags: system_boot
+#    - role: system/boot # System bootloader
+#      tags: system_boot
     - role: system/security # Remove root login, improve ssh security, etc.
       tags: system_security
     - role: system/bootstrap # User bootstrap, add custom user with private key, add vim themes, update bashrc
