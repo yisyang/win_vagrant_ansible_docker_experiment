@@ -28,6 +28,7 @@
   sudo: yes
   tags:
     - system
+    - init
   roles:
 #    - role: system/boot # System bootloader
 #      tags: system_boot
