@@ -19,8 +19,8 @@
 - name: Security | Install rootkit detection
   action: apt pkg=rkhunter state=present
 
-- name: Security | Install unattended-upgrades
-  action: apt pkg=unattended-upgrades state=present
+#- name: Security | Install unattended-upgrades
+#  action: apt pkg=unattended-upgrades state=present
 
 #- name: Security | Adjust APT update intervals
 #  action: copy src=apt_periodic dest=/etc/apt/apt.conf.d/10periodic
@@ -73,8 +73,8 @@
 #- name: Security | DenyHosts
 #  action: apt pkg=denyhosts state=present
 
-- name: Security | Secure shm
-  action: lineinfile dest=/etc/fstab  regexp="^tmpfs" line="tmpfs     /dev/shm     tmpfs     defaults,noexec,nosuid     0     0" state=present
+#- name: Security | Secure shm
+#  action: lineinfile dest=/etc/fstab  regexp="^tmpfs" line="tmpfs     /dev/shm     tmpfs     defaults,noexec,nosuid     0     0" state=present
 
 #- name: Security | Reboot
 #  action: command reboot

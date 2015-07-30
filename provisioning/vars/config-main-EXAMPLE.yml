@@ -24,6 +24,9 @@ ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, not pas
 # Can be helpful if you plan to use git directly on the provisioned machines
 #ssh_user_gitkey_dest: "/home/{{ ssh_user }}/.ssh/gitkey"
 
+# MySQL
+database_mysql_root_password: "nobodyknowsthepassword"
+
 # App / Git
 git_app_repos:
   - repo: "git@github.com:yisyang/win_vagrant_ansible_docker_experiment.git"

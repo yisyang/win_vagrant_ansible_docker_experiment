@@ -24,7 +24,7 @@
       apt: update_cache=yes cache_valid_time=3600
 
 - name: Run system playbook
-  hosts: all
+  hosts: init
   sudo: yes
   tags:
     - system
@@ -39,15 +39,13 @@
     - vars/config-main.yml
 
 - name: Install various web dependencies
-  hosts: all
+  hosts: webservers
   sudo: yes
   roles:
     - role: database/mysql
       tags: database_mysql
     - role: database/redis
       tags: database_redis
-    - role: database/elasticsearch
-      tags: database_elasticsearch
     - role: web/apache2
       tags: web_apache2
     - role: web/php5
@@ -56,10 +54,19 @@
       tags: web_php5
   vars_files:
     - vars/config-main.yml
+
+- name: Install elastic search
+  hosts: searchservers
+  sudo: yes
+  roles:
+    - role: database/elasticsearch
+      tags: database_elasticsearch
+  vars_files:
+    - vars/config-main.yml
     - vars/config-elasticsearch.yml
 
 - name: Install and configure main app
-  hosts: all
+  hosts: webservers
   sudo: yes
   tags:
     - app
