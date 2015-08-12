@@ -95,3 +95,14 @@
   user: name={{ web_user }} password={{ web_user_password }}
   when: web_user_password is defined
   ignore_errors: true
+
+# Get machine name
+- name: Bootstrap | System | Get machine hostname
+  action: command cat /etc/hostname
+  register: hostname_output
+  ignore_errors: true
+
+# Make sure machine name is added to /etc/hosts
+- name: Bootstrap | System | Add machine hostname into /etc/hosts
+  lineinfile: dest=/etc/hosts state=present backup=no regexp="^127.0.0.1\s+{{ hostname_output.stdout }}$" line="127.0.0.1       {{ hostname_output.stdout }}"
+  when: hostname_output is defined and hostname_output.stdout != ""
