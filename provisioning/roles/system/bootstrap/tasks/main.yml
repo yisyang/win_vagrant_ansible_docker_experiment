@@ -48,7 +48,7 @@
 
 # Transfer ssh user preferences
 - name: Bootstrap | User | Bash | Transfer .bashrc
-  copy: src={{ ssh_user_bashrc }} dest=/home/{{ ssh_user }}/.bashrc owner={{ ssh_user }} group={{ ssh_user }}
+  copy: src={{ ssh_user_bashrc }} dest=/home/{{ ssh_user }}/.bashrc owner={{ ssh_user }} group={{ ssh_user }} backup=yes
   when: ssh_user_reset or new_user.changed
 - name: Bootstrap | User | Vim | Transfer .vimrc
   copy: src={{ ssh_user_vimrc }} dest=/home/{{ ssh_user }}/.vimrc owner={{ ssh_user }} group={{ ssh_user }}
