@@ -90,7 +90,14 @@
   notify: Restart Elasticsearch
 - lineinfile: dest=/etc/pam.d/sudo regexp='^session    required   pam_limits.so' insertafter=EOF line='session    required   pam_limits.so'
   notify: Restart Elasticsearch
-- lineinfile: dest=/etc/init.d/elasticsearch regexp='^(DAEMON_OPTS=".*-Des.max-open-files=true")$' insertafter='^(DAEMON_OPTS=".*CONF_DIR")$' line='DAEMON_OPTS="$DAEMON_OPTS -Des.max-open-files=true"'
+- name: Database | Elasticsearch | Create dir /var/run/elasticsearch
+  file: dest=/var/run/elasticsearch state=directory owner={{ elasticsearch_user }} group={{ elasticsearch_group }}
+  notify: Restart Elasticsearch
+- name: Database | Elasticsearch | Update init.d
+  lineinfile: dest=/etc/init.d/elasticsearch regexp='^PID_FILE=' line='PID_FILE=/var/run/elasticsearch/$NAME.pid'
+  notify: Restart Elasticsearch
+- name: Database | Elasticsearch | Update init.d
+  lineinfile: dest=/etc/init.d/elasticsearch regexp='^(DAEMON_OPTS=".*-Des.max-open-files=true")$' insertafter='^(DAEMON_OPTS=".*CONF_DIR")$' line='DAEMON_OPTS="$DAEMON_OPTS -Des.max-open-files=true"'
   notify: Restart Elasticsearch
 
 # Install AWS Plugin
