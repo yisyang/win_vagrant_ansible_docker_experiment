@@ -8,7 +8,7 @@
   register: result
 
 - name: Security | Apply iptables
-  action: command iptables-restore < /etc/iptables.firewall.rules
+  shell: iptables-restore < /etc/iptables.firewall.rules
   when: result.changed
 
 - name: Security | Auto apply iptables in the future
