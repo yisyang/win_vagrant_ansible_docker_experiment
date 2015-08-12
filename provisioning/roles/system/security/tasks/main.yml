@@ -3,6 +3,18 @@
 # Type: task
 # Part: System/Security
 
+- name: Security | Update iptables with defaults
+  template: src=iptables.j2 dest=/etc/iptables.firewall.rules
+  register: result
+
+- name: Security | Apply iptables
+  action: command iptables-restore < /etc/iptables.firewall.rules
+  when: result.changed
+
+- name: Security | Auto apply iptables in the future
+  template: src=if-pre-up-firewall.j2 dest=/etc/network/if-pre-up.d/firewall mode=0755
+  when: result.changed
+
 - name: Security | Install fail2ban
   action: apt pkg=fail2ban state=installed
 
@@ -45,10 +57,10 @@
 #- name: Security | Firewall allow https (ufw enable has to be run manually)
 #  action: command ufw allow https
 
-#- name: Security | Prevent IP spoofing
-#  action: lineinfile dest=/etc/host.conf regexp="^order" line="order bind,hosts" state=present
-#- name: Security | Prevent IP spoofing
-#  action: lineinfile dest=/etc/host.conf regexp="^nospoof" line="nospoof on" state=present
+- name: Security | Prevent IP spoofing
+  action: lineinfile dest=/etc/host.conf regexp="^order" line="order bind,hosts" state=present
+- name: Security | Prevent IP spoofing
+  action: lineinfile dest=/etc/host.conf regexp="^nospoof" line="nospoof on" state=present
 
 #- name: Security | Intrusion detection PSAD
 #  action: apt pkg=psad state=present
