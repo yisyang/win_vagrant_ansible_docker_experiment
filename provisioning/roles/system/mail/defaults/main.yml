@@ -1,0 +1,7 @@
+---
+# File: main.yml
+# Type: defaults
+# Part: System/Mail
+
+system_mail_mysql_user: "{{ system_mail_user }}"
+system_mail_mysql_user_password: "{{ system_mail_user_password }}"

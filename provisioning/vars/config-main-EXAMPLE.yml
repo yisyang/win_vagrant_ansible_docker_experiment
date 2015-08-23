@@ -24,6 +24,28 @@ ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, not pas
 # Can be helpful if you plan to use git directly on the provisioned machines
 #ssh_user_gitkey_dest: "/home/{{ ssh_user }}/.ssh/gitkey"
 
+# System / Mail
+# By default the mail user has access to the mail database with the same credentials
+system_mail_user: "mailuser"
+system_mail_user_password: "mailuserpass"
+system_mail_mysql_database: "mailserver"
+system_mail_domains:
+  - name: "domain1.com"
+    users:
+      - email: "you@domain1.com"
+        pass: "EXAMPLE_PASSWORD"
+      - email: "me@domain1.com"
+        pass: "EXAMPLE_PASSWORD"
+    aliases:
+      - src: "webmaster@domain1.com"
+        dest: "you@domain1.com"
+      - src: "admin@domain1.com"
+        dest: "you@domain1.com"
+  - name: "domain2.com"
+    users:
+      - email: "you@domain2.com"
+        pass: "EXAMPLE_PASSWORD"
+
 # MySQL
 database_mysql_root_password: "nobodyknowsthepassword"
 

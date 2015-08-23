@@ -1,0 +1,10 @@
+---
+# File: main.yml
+# Type: handler
+# Part: System/Mail
+
+- name: Restart postfix
+  action: service postfix state=restarted
+
+- name: Restart dovecot
+  action: service dovecot tate=restarted
