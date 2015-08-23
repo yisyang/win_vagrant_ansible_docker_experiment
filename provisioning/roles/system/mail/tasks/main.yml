@@ -3,6 +3,8 @@
 # Type: task
 # Part: System/Mail
 
+# Prepare MySQL DB
+
 - name: System | Mail | Create system mail user group
   action: group name={{ system_mail_user }} state=present
 - name: System | Mail | Create system mail user
@@ -20,3 +22,11 @@
     - localhost
 - name: System | Mail | Remove database import file
   file: dest=/home/{{ system_mail_user }}/mailserver.sql state=absent
+
+
+# Configure Postfix
+- name: System | Mail | Copy MySQL database import file
+  template: src=mailserver.sql.j2 dest=/home/{{ system_mail_user }}/mailserver.sql owner={{ system_mail_user }} group={{ system_mail_user }} mode=0644 backup=yes
+
+
+

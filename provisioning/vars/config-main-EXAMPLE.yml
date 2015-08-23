@@ -29,6 +29,7 @@ ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, not pas
 system_mail_user: "mailuser"
 system_mail_user_password: "mailuserpass"
 system_mail_mysql_database: "mailserver"
+system_mail_default_domain: "domain1.com"
 system_mail_domains:
   - name: "domain1.com"
     users:

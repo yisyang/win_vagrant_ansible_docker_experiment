@@ -1,0 +1,5 @@
+user = {{ system_mail_user }}
+password = {{ system_mail_user_password }}
+hosts = 127.0.0.1
+dbname = {{ system_mail_mysql_database }}
+query = SELECT destination FROM virtual_aliases WHERE source='%s'
