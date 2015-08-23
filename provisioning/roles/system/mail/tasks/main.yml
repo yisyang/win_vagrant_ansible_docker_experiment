@@ -3,14 +3,20 @@
 # Type: task
 # Part: System/Mail
 
+- name: System | Mail | Create system mail user group
+  action: group name={{ system_mail_user }} state=present
 - name: System | Mail | Create system mail user
-  user: name={{ system_mail_user }} group={{ ssh_user }} shell=/bin/bash state=present
+  user: name={{ system_mail_user }} group={{ system_mail_user }} shell=/bin/bash state=present
 - name: System | Mail | Update system mail user password
   user: name={{ system_mail_user }} password={{ system_mail_user_password }}
   when: system_mail_user_password is defined
-- name: System | Mail | Copy MySQL database dump
+- name: System | Mail | Copy MySQL database import file
   template: src=mailserver.sql.j2 dest=/home/{{ system_mail_user }}/mailserver.sql owner={{ system_mail_user }} group={{ system_mail_user }} mode=0644 backup=yes
-- name: System | Mail | Create MySQL database
-  mysql_db: name={{ system_mail_mysql_database }} target=/home/{{ system_mail_user }}/mailserver.sql state=present
+- name: System | Mail | Create MySQL database and import data
+  mysql_db: name={{ system_mail_mysql_database }} target=/home/{{ system_mail_user }}/mailserver.sql state=import
 - name: System | Mail | Create MySQL user and authorize to database
-  mysql_user: login_user=root login_password={{ database_mysql_root_password }} name={{ system_mail_mysql_user }} password={{ system_mail_mysql_user_password }} priv={{ system_mail_mysql_database }}.*:USAGE state=present
+  mysql_user: login_user=root login_password={{ database_mysql_root_password }} name={{ system_mail_mysql_user }} host={{ item }} password={{ system_mail_mysql_user_password }} priv={{ system_mail_mysql_database }}.*:SELECT state=present
+  with_items:
+    - localhost
+- name: System | Mail | Remove database import file
+  file: dest=/home/{{ system_mail_user }}/mailserver.sql state=absent

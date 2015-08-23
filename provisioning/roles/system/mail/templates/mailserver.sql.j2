@@ -38,27 +38,31 @@ CREATE TABLE `virtual_aliases` (
 --
 
 {% if system_mail_domains is defined and system_mail_domains|length %}
-    {% set temp_mailserver_sql_aliases = [] %}
-    {% for domain in system_mail_domains %}
-        {% set domains_loop = loop %}
-        {% for alias in domain.aliases %}
-            {% do temp_mailserver_sql_aliases.append({
-                'domain_id': {{ domains_loop.index }},
-                'src': {{ alias.src }},
-                'dest': {{ alias.dest }}
-            }) %}
-        {% end for %}
-    {% end for %}
+    {%- set temp_mailserver_sql_aliases = [] -%}
+    {%- for domain in system_mail_domains -%}
+        {%- set domains_loop = loop -%}
+        {%- for alias in domain.aliases -%}
+            {#- This is in an if block even though it is just a variable assignment because
+                the only other way to append to an array is with the 'do' Jinja2 extension
+            -#}
+            {%- if temp_mailserver_sql_aliases.append({
+                    'domain_id': domains_loop.index,
+                    'src': alias.src,
+                    'dest': alias.dest
+                }) -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endfor -%}
 
 LOCK TABLES `virtual_aliases` WRITE;
 /*!40000 ALTER TABLE `virtual_aliases` DISABLE KEYS */;
 INSERT INTO `virtual_aliases`
 (`domain_id`, `source`, `destination`)
 VALUES
-    {% for item in temp_mailserver_sql_aliases %}
-        {{ ',' if not loop.first }}
-        ({{ item.domain_id }}, '{{ item.src }}', '{{ item.dest }}')
-    {% end for %}
+    {%- for item in temp_mailserver_sql_aliases -%}
+        {{- ',' if not loop.first }}
+        ({{ item.domain_id }}, "{{ item.src }}", "{{ item.dest }}")
+    {%- endfor -%}
 ;
 /*!40000 ALTER TABLE `virtual_aliases` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -90,10 +94,10 @@ LOCK TABLES `virtual_domains` WRITE;
 INSERT INTO `virtual_domains`
 (`id`, `name`)
 VALUES
-    {% for item in system_mail_domains %}
-        {{ ',' if not loop.first }}
-        ({{ loop.index }}, '{{ item.name }}')
-    {% end for %}
+    {%- for item in system_mail_domains -%}
+        {{- ',' if not loop.first }}
+        ({{ loop.index }}, "{{ item.name }}")
+    {%- endfor -%}
 ;
 /*!40000 ALTER TABLE `virtual_domains` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -124,27 +128,28 @@ CREATE TABLE `virtual_users` (
 --
 
 {% if system_mail_domains is defined and system_mail_domains|length %}
-    {% set temp_mailserver_sql_users = [] %}
-    {% for domain in system_mail_domains %}
-        {% set domains_loop = loop %}
-        {% for user in domain.users %}
-            {% do temp_mailserver_sql_users.append({
-                'domain_id': {{ domains_loop.index }},
-                'email': {{ user.email }},
-                'pass': {{ user.pass }}
-            }) %}
-        {% end for %}
-    {% end for %}
+    {%- set temp_mailserver_sql_users = [] -%}
+    {%- for domain in system_mail_domains -%}
+        {%- set domains_loop = loop -%}
+        {%- for user in domain.users -%}
+            {%- if temp_mailserver_sql_users.append({
+                'domain_id': domains_loop.index,
+                'email': user.email,
+                'pass': user.pass
+            }) -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endfor -%}
 
 LOCK TABLES `virtual_users` WRITE;
 /*!40000 ALTER TABLE `virtual_users` DISABLE KEYS */;
 INSERT INTO `virtual_users`
 (`domain_id`, `password`, `email`)
 VALUES
-    {% for item in temp_mailserver_sql_users %}
-        {{ ',' if not loop.first }}
-        ({{ item.domain_id }}, ENCRYPT('{{ item.pwd }}', CONCAT('$6$', SUBSTRING(SHA(RAND()), -16))), '{{ item.email }}')
-    {% end for %}
+    {%- for item in temp_mailserver_sql_users -%}
+        {{- ',' if not loop.first }}
+        ({{ item.domain_id }}, ENCRYPT("{{ item.pass }}", CONCAT('$6$', SUBSTRING(SHA(RAND()), -16))), "{{ item.email }}")
+    {%- endfor -%}
 ;
 /*!40000 ALTER TABLE `virtual_users` ENABLE KEYS */;
 UNLOCK TABLES;
