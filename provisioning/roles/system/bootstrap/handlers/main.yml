@@ -4,4 +4,4 @@
 # Part: System/Bootstrap
 
 - name: Restart sshd
-  action: service sshd state=restarted
+  service: sshd state=restarted
