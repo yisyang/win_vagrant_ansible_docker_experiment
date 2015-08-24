@@ -4,7 +4,7 @@
 # Part: System/Debug
 
 - name: Dump all vars
-  action: template src=dump_vars.j2 dest=/tmp/ansible_vars_dump
+  template: src=dump_vars.j2 dest=/tmp/ansible_vars_dump
 
 - name: Fetch dumped vars back onto host machine
   fetch: src=/tmp/ansible_vars_dump dest=fetched

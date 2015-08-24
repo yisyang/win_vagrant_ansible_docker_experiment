@@ -6,10 +6,10 @@
 # Create ssh user group and user
 # Ensure only selected users can sudo
 - name: Bootstrap | Group | Create ssh user group
-  action: group name={{ ssh_user_group }} state=present
+  group: name={{ ssh_user_group }} state=present
   register: new_group
 - name: Bootstrap | Group | Protect su by limiting access only to ssh user group.
-  action: command dpkg-statoverride --update --force --add root {{ ssh_user_group }} 4750 /bin/su
+  command: dpkg-statoverride --update --force --add root {{ ssh_user_group }} 4750 /bin/su
   when: new_group.changed
 - name: Bootstrap | User | Remove ssh user
   user: name={{ ssh_user }} state=absent remove=yes
@@ -77,10 +77,10 @@
 
 # Create web user and group
 - name: Bootstrap | Group | Create web user group
-  action: group name={{ web_user_group }} state=present
+  group: name={{ web_user_group }} state=present
   register: new_group_web_user
 - name: Bootstrap | Group | Protect su by limiting access only to web user group.
-  action: command dpkg-statoverride --update --force --add root {{ web_user_group }} 4750 /bin/su
+  command: dpkg-statoverride --update --force --add root {{ web_user_group }} 4750 /bin/su
   when: new_group_web_user.changed
 - name: Bootstrap | User | Create web user
   user: name={{ web_user }} group={{ web_user }} shell=/bin/bash state=present
@@ -98,7 +98,7 @@
 
 # Get machine name
 - name: Bootstrap | System | Get machine hostname
-  action: command cat /etc/hostname
+  command: cat /etc/hostname
   register: hostname_output
   ignore_errors: true
 

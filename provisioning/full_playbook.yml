@@ -2,6 +2,12 @@
 # File: full_playbook.yml
 # Type: playbook
 
+# Reminder - variable load order:
+# 1. vars_files listed here
+# 2. playbook /defaults vars
+# 3. runtime - facts, register, etc.
+# 4. inventory vars
+
 - name: Set global facts
   hosts: all
   tags: always
@@ -37,14 +43,49 @@
   vars_files:
     - vars/config-main.yml
 
-- name: Install various web dependencies
-  hosts: webservers
+- name: Install various data dependencies
+  hosts: init:dev:mail:data
   sudo: yes
   roles:
     - role: database/mysql
       tags: database_mysql
+  vars_files:
+    - vars/config-main.yml
+
+- name: Install various data dependencies
+  hosts: dev:data
+  sudo: yes
+  roles:
     - role: database/redis
       tags: database_redis
+  vars_files:
+    - vars/config-main.yml
+
+- name: Install elastic search
+  hosts: dev:search
+  sudo: yes
+  roles:
+    - role: database/elasticsearch
+      tags: database_elasticsearch
+  vars_files:
+    - vars/config-main.yml
+    - vars/config-elasticsearch.yml
+
+- name: Install mail server
+  hosts: init:dev:mail
+  sudo: yes
+  tags:
+    - mail
+  roles:
+    - role: system/mail # Install postfix, dovecot
+      tags: system_mail
+  vars_files:
+    - vars/config-main.yml
+
+- name: Install various web dependencies
+  hosts: web
+  sudo: yes
+  roles:
     - role: web/apache2
       tags: web_apache2
     - role: web/php5
@@ -54,18 +95,8 @@
   vars_files:
     - vars/config-main.yml
 
-- name: Install elastic search
-  hosts: searchservers
-  sudo: yes
-  roles:
-    - role: database/elasticsearch
-      tags: database_elasticsearch
-  vars_files:
-    - vars/config-main.yml
-    - vars/config-elasticsearch.yml
-
 - name: Install and configure main app
-  hosts: webservers
+  hosts: web
   sudo: yes
   tags:
     - app

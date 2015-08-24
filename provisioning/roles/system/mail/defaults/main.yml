@@ -1,0 +1,19 @@
+---
+# File: main.yml
+# Type: defaults
+# Part: System/Mail
+
+system_mail_apt_modules:
+  - postfix
+  - postfix-mysql
+  - dovecot-core
+  - dovecot-imapd
+  - dovecot-pop3d
+  - dovecot-lmtpd
+  - dovecot-mysql
+
+system_mail_tls_key_file: "/etc/dovecot/private/tls_key.key"
+system_mail_tls_cert_file: "/etc/dovecot/tls_cert.crt"
+# If true, a private key and self-signed SSL cert will be generated and placed in the paths above
+system_mail_generate_cert: true
+system_mail_generate_cert_subject: "/C=US/O={{ system_mail_default_domain }}/CN={{ system_mail_default_domain }}"
