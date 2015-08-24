@@ -2,6 +2,12 @@
 # File: full_playbook.yml
 # Type: playbook
 
+# Reminder - variable load order:
+# 1. vars_files listed here
+# 2. playbook /defaults vars
+# 3. runtime - facts, register, etc.
+# 4. inventory vars
+
 - name: Set global facts
   hosts: all
   tags: always

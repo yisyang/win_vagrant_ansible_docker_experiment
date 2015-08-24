@@ -3,30 +3,105 @@
 # Type: task
 # Part: System/Mail
 
+# Install dependencies
+
+- name: System | Mail | Install requried apt modules
+  apt: name={{ item }} state=latest
+  with_items: system_mail_apt_modules
+  when: system_mail_apt_modules is defined
+
+
 # Prepare MySQL DB
 
-- name: System | Mail | Create system mail user group
-  action: group name={{ system_mail_user }} state=present
-- name: System | Mail | Create system mail user
-  user: name={{ system_mail_user }} group={{ system_mail_user }} shell=/bin/bash state=present
-- name: System | Mail | Update system mail user password
-  user: name={{ system_mail_user }} password={{ system_mail_user_password }}
-  when: system_mail_user_password is defined
+- name: System | Mail | Create MySQL mail user group on system
+  group: name={{ system_mail_mysql_user }} state=present
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Create MySQL mail user on system
+  user: name={{ system_mail_mysql_user }} group={{ system_mail_mysql_user }} shell=/bin/bash state=present
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Update MySQL mail user password on system
+  user: name={{ system_mail_mysql_user }} password={{ system_mail_mysql_user_password }}
+  when: system_mail_domains is defined and system_mail_domains|length and system_mail_mysql_user_password is defined
+
 - name: System | Mail | Copy MySQL database import file
-  template: src=mailserver.sql.j2 dest=/home/{{ system_mail_user }}/mailserver.sql owner={{ system_mail_user }} group={{ system_mail_user }} mode=0644 backup=yes
+  template: src=mailserver.sql.j2 dest=/home/{{ system_mail_mysql_user }}/mailserver.sql owner={{ system_mail_mysql_user }} group={{ system_mail_mysql_user }} mode=0644 backup=yes
+  when: system_mail_domains is defined and system_mail_domains|length
+
 - name: System | Mail | Create MySQL database and import data
-  mysql_db: name={{ system_mail_mysql_database }} target=/home/{{ system_mail_user }}/mailserver.sql state=import
-- name: System | Mail | Create MySQL user and authorize to database
-  mysql_user: login_user=root login_password={{ database_mysql_root_password }} name={{ system_mail_mysql_user }} host={{ item }} password={{ system_mail_mysql_user_password }} priv={{ system_mail_mysql_database }}.*:SELECT state=present
-  with_items:
-    - localhost
+  mysql_db: name={{ system_mail_mysql_database }} target=/home/{{ system_mail_mysql_user }}/mailserver.sql state=import
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Create MySQL mail user and authorize to database
+  mysql_user: login_user=root login_password={{ database_mysql_root_password }} name={{ system_mail_mysql_user }} host=localhost password={{ system_mail_mysql_user_password }} priv={{ system_mail_mysql_database }}.*:SELECT state=present
+  when: system_mail_domains is defined and system_mail_domains|length
+
 - name: System | Mail | Remove database import file
-  file: dest=/home/{{ system_mail_user }}/mailserver.sql state=absent
+  file: dest=/home/{{ system_mail_mysql_user }}/mailserver.sql state=absent
+  when: system_mail_domains is defined and system_mail_domains|length
 
 
 # Configure Postfix
-- name: System | Mail | Copy MySQL database import file
-  template: src=mailserver.sql.j2 dest=/home/{{ system_mail_user }}/mailserver.sql owner={{ system_mail_user }} group={{ system_mail_user }} mode=0644 backup=yes
+
+- name: System | Mail | Apply postfix config templates
+  template: src={{ item.src }} dest={{ item.dest }} mode=0644 backup=yes
+  with_items:
+    - { src: 'postfix/mailname.j2', dest: '/etc/mailname' }
+    - { src: 'postfix/main.cf.j2', dest: '/etc/postfix/main.cf' }
+    - { src: 'postfix/master.cf.j2', dest: '/etc/postfix/master.cf' }
+    - { src: 'postfix/mysql-virtual-mailbox-domains.cf.j2', dest: '/etc/postfix/mysql-virtual-mailbox-domains.cf' }
+    - { src: 'postfix/mysql-virtual-mailbox-maps.cf.j2', dest: '/etc/postfix/mysql-virtual-mailbox-maps.cf' }
+    - { src: 'postfix/mysql-virtual-alias-maps.cf.j2', dest: '/etc/postfix/mysql-virtual-alias-maps.cf' }
+  notify: Restart postfix
+  when: system_mail_domains is defined and system_mail_domains|length
 
 
+# Configure Dovecot
 
+- name: System | Mail | Apply dovecot config templates
+  template: src={{ item.src }} dest={{ item.dest }} mode=0644 backup=yes
+  with_items:
+    - { src: 'dovecot/10-auth.conf.j2', dest: '/etc/dovecot/conf.d/10-auth.conf' }
+    - { src: 'dovecot/10-mail.conf.j2', dest: '/etc/dovecot/conf.d/10-mail.conf' }
+    - { src: 'dovecot/10-master.conf.j2', dest: '/etc/dovecot/conf.d/10-master.conf' }
+    - { src: 'dovecot/10-ssl.conf.j2', dest: '/etc/dovecot/conf.d/10-ssl.conf' }
+    - { src: 'dovecot/auth-sql.conf.ext.j2', dest: '/etc/dovecot/conf.d/auth-sql.conf.ext' }
+    - { src: 'dovecot/dovecot.conf.j2', dest: '/etc/dovecot/dovecot.conf' }
+    - { src: 'dovecot/dovecot-sql.conf.ext.j2', dest: '/etc/dovecot/dovecot-sql.conf.ext' }
+  notify: Restart dovecot
+  when: system_mail_domains is defined and system_mail_domains|length
+
+
+# Misc
+
+- name: System | Mail | Generate SSL key and cert
+  command: openssl req -subj "{{ system_mail_generate_cert_subject }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ system_mail_tls_key_file }} -out {{ system_mail_tls_cert_file }}
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Update permissions on SSL key
+  file: dest={{ system_mail_tls_key_file }} mode=0600 state=file
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Create system mail user group
+  group: name={{ system_mail_user }} gid={{ system_mail_user_gid | default('5000') }} state=present
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Create system mail user
+  user: name={{ system_mail_user }} group={{ system_mail_user }} uid={{ system_mail_user_uid | default('5000') }} shell=/bin/bash home=/var/mail state=present
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Make mail folder
+  file: dest=/var/mail/vhosts/ state=directory
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Make mail folders for each domain
+  file: dest=/var/mail/vhosts/{{ item.name }} state=directory
+  with_items: system_mail_domains
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Update mail folder permissions
+  file: dest=/var/mail owner={{ system_mail_user }} group={{ system_mail_user }} recurse=yes state=directory
+
+- name: System | Mail | Update mail folder permissions
+  file: dest=/etc/dovecot owner={{ system_mail_user }} group=dovecot mode=o-rwx recurse=yes state=directory

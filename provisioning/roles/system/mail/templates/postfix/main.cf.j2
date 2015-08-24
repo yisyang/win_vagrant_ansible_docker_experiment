@@ -19,8 +19,8 @@ readme_directory = no
 
 # TLS parameters
 #smtpd_tls_CAfile = /etc/dovecot/tls_ca.crt
-smtpd_tls_cert_file = /etc/dovecot/tls_cert.crt
-smtpd_tls_key_file = /etc/dovecot/private/tls_key.key
+smtpd_tls_cert_file = {{ system_mail_tls_cert_file }}
+smtpd_tls_key_file = {{ system_mail_tls_key_file }}
 smtpd_use_tls = yes
 smtpd_tls_auth_only = yes
 

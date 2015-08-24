@@ -1,5 +1,5 @@
-user = {{ system_mail_user }}
-password = {{ system_mail_user_password }}
+user = {{ system_mail_mysql_user }}
+password = {{ system_mail_mysql_user_password }}
 hosts = 127.0.0.1
 dbname = {{ system_mail_mysql_database }}
 query = SELECT 1 FROM virtual_users WHERE email='%s'
