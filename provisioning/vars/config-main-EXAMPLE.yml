@@ -58,16 +58,16 @@ app_git_repos:
   - repo: "https://github.com/drnic/php-helloworld.git"
 #    key_file: "{{ ssh_user_gitkey }}"
     version: "master"
-    dest: "/home/{{ web_user }}/helloworld/app"
+    dest: "/var/www/helloworld/app"
     owner: "{{ web_user }}"
     group: "{{ web_user_group }}"
     update_to_latest: true # Avoiding the key "update" as it causes a conflict with using with_items
     force: true
-    link: "/home/{{ ssh_user }}/link_to_helloworld_app"
+    link: "/var/{{ ssh_user }}/link_to_helloworld_app"
 #  - repo: "git@github.com:yourusername/yourapp.git"
 #    key_file: "{{ ssh_user_gitkey }}"
 #    version: "master"
-#    dest: "/home/www/inifiles"
+#    dest: "/var/www/inifiles"
 #    owner: "{{ ssh_user }}"
 #    group: "{{ ssh_user_group }}"
 #    update_to_latest: yes
@@ -78,18 +78,18 @@ app_git_repos:
 app_domains:
   - fqdn: "example.com"
     fqdn_alias: "anotherexample.com, alt.example.com"
-    ssl_dir: "/home/{{ web_user }}/helloworld/ssl"
-    app_dir: "/home/{{ web_user }}/helloworld/app"
+    ssl_dir: "/var/www/helloworld/ssl"
+    app_dir: "/var/www/helloworld/app"
     owner: "{{ web_user }}"
     group: "{{ web_user_group }}"
     ssl:
       key:
 #        src: '/files/example_ssl.key'
-        dest: "/home/{{ web_user }}/helloworld/ssl/ssl_key.key"
+        dest: "/var/www/helloworld/ssl/ssl_key.key"
       cert:
 #        src: '/files/example_ssl.cert'
-        dest: "/home/{{ web_user }}/helloworld/ssl/ssl_cert.crt"
+        dest: "/var/www/helloworld/ssl/ssl_cert.crt"
 #      ca:
 #        src: '/files/example_ssl.ca.cert'
-#        dest: "/home/{{ web_user }}/helloworld/ssl/ssl_ca.crt"
+#        dest: "/var/www/helloworld/ssl/ssl_ca.crt"
       self_signed: true
