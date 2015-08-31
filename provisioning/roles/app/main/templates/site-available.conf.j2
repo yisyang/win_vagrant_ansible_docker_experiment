@@ -1,0 +1,64 @@
+<VirtualHost *:80>
+ServerName {{ item.fqdn }}
+{% if item.fqdn_alias -%}
+ServerAlias {{ item.fqdn_alias }}
+{% endif %}
+DocumentRoot "{{ item.app_dir }}"
+
+RewriteEngine On
+
+ErrorLog  ${APACHE_LOG_DIR}/{{ item.fqdn }}.error.log
+CustomLog ${APACHE_LOG_DIR}/{{ item.fqdn }}.access.log combined
+
+<Directory />
+Order Deny,Allow
+Deny from all
+</Directory>
+
+<Directory "{{ item.app_dir }}">
+Order Allow,Deny
+Allow from all
+AllowOverride All
+</Directory>
+</VirtualHost>
+
+{% if item.ssl -%}
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+ServerName {{ item.fqdn }}
+{% if item.fqdn_alias -%}
+ServerAlias {{ item.fqdn_alias }}
+{% endif %}
+DocumentRoot "{{ item.app_dir }}"
+
+RewriteEngine On
+ErrorLog  ${APACHE_LOG_DIR}/{{ item.fqdn }}.ssl.error.log
+CustomLog ${APACHE_LOG_DIR}/{{ item.fqdn }}.ssl.access.log combined
+
+SSLEngine On
+SSLCertificateFile    "{{ item.ssl.cert.dest }}"
+SSLCertificateKeyFile "{{ item.ssl.key.dest }}"
+{% if item.ssl.ca -%}
+SSLCACertificateFile  "{{ item.ssl.ca.dest }}"
+{% endif %}
+
+<Directory />
+Order Deny,Allow
+Deny from all
+</Directory>
+
+<Directory "{{ item.app_dir }}">
+Order Allow,Deny
+Allow from all
+AllowOverride All
+</Directory>
+
+<Location />
+SSLRequireSSL On
+SSLVerifyClient None
+SSLVerifyDepth 1
+SSLOptions +StdEnvVars +StrictRequire
+</Location>
+</VirtualHost>
+</IfModule>
+{% endif %}

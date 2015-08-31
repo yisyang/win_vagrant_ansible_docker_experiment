@@ -38,7 +38,7 @@
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Remove database import file
-  file: dest=/home/{{ system_mail_mysql_user }}/mailserver.sql state=absent
+  file: path=/home/{{ system_mail_mysql_user }}/mailserver.sql state=absent
   when: system_mail_domains is defined and system_mail_domains|length
 
 
@@ -80,7 +80,7 @@
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Update permissions on SSL key
-  file: dest={{ system_mail_tls_key_file }} mode=0600 state=file
+  file: path={{ system_mail_tls_key_file }} mode=0600 state=file
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Create system mail user group
@@ -92,16 +92,16 @@
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Make mail folder
-  file: dest=/var/mail/vhosts/ state=directory
+  file: path=/var/mail/vhosts/ state=directory
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Make mail folders for each domain
-  file: dest=/var/mail/vhosts/{{ item.name }} state=directory
+  file: path=/var/mail/vhosts/{{ item.name }} state=directory
   with_items: system_mail_domains
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Update mail folders permissions
-  file: dest={{ item.dest }} owner={{ item.owner }} group={{ item.group }} mode={{ item.mode | default('0644') }} recurse=yes state=directory
+  file: path={{ item.dest }} owner={{ item.owner }} group={{ item.group }} mode={{ item.mode | default('0644') }} recurse=yes state=directory
   with_items:
     - { dest: '/var/mail', owner: "{{ system_mail_user }}", group: "{{ system_mail_user }}" }
     - { dest: '/etc/dovecot', owner: "{{ system_mail_user }}", group: 'dovecot', mode: 'o-rwx' }

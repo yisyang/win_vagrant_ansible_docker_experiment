@@ -54,21 +54,42 @@ system_mail_domains:
 database_mysql_root_password: "nobodyknowsthepassword"
 
 # App / Git
-git_app_repos:
-  - repo: "git@github.com:yisyang/win_vagrant_ansible_docker_experiment.git"
-    key_file: "{{ ssh_user_gitkey }}"
+app_git_repos:
+  - repo: "https://github.com/drnic/php-helloworld.git"
+#    key_file: "{{ ssh_user_gitkey }}"
     version: "master"
-    dest: "/home/{{ web_user }}/win_vagrant_ansible_docker_experiment"
+    dest: "/var/www/helloworld/app"
     owner: "{{ web_user }}"
     group: "{{ web_user_group }}"
     update_to_latest: true # Avoiding the key "update" as it causes a conflict with using with_items
     force: true
-    link: "/home/{{ ssh_user }}/link_to_win_vagrant_ansible_docker_experiment"
+    link: "/var/{{ ssh_user }}/link_to_helloworld_app"
 #  - repo: "git@github.com:yourusername/yourapp.git"
 #    key_file: "{{ ssh_user_gitkey }}"
 #    version: "master"
-#    dest: "/home/www/inifiles"
+#    dest: "/var/www/inifiles"
 #    owner: "{{ ssh_user }}"
 #    group: "{{ ssh_user_group }}"
 #    update_to_latest: yes
 #    force: true
+
+# App / Apache2
+# If set, config file for this site will be auto-generated at /etc/apache2/sites-available and symlinked to sites-enabled
+app_domains:
+  - fqdn: "example.com"
+    fqdn_alias: "anotherexample.com, alt.example.com"
+    ssl_dir: "/var/www/helloworld/ssl"
+    app_dir: "/var/www/helloworld/app"
+    owner: "{{ web_user }}"
+    group: "{{ web_user_group }}"
+    ssl:
+      key:
+#        src: '/files/example_ssl.key'
+        dest: "/var/www/helloworld/ssl/ssl_key.key"
+      cert:
+#        src: '/files/example_ssl.cert'
+        dest: "/var/www/helloworld/ssl/ssl_cert.crt"
+#      ca:
+#        src: '/files/example_ssl.ca.cert'
+#        dest: "/var/www/helloworld/ssl/ssl_ca.crt"
+      self_signed: true

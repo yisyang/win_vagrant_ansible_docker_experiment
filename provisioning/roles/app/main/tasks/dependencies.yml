@@ -8,15 +8,13 @@
   with_items: app_main_apt_modules
   when: app_main_apt_modules is defined
 
-#- name: App | Main | Env | Install pecl dependencies
-#  shell: >
-#    pecl search {{ item }};
-#    pecl install {{ item }}
-#  ignore_errors: true
-#  with_items:
-#    - igbinary
-#    - jsonc
-#    - zip
+- name: App | Main | Env | Install pecl dependencies for PHP app
+  shell: >
+    pecl search {{ item }};
+    pecl install {{ item }}
+  ignore_errors: true
+  with_items: app_main_pecl_modules
+  when: app_main_pecl_modules is defined
 
 - name: App | Main | Env | Update apt
   shell: "apt-get update  -y --fix-missing"
