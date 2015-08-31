@@ -8,3 +8,6 @@
 
 # Checkout apps
 - include: checkout.yml
+
+# Build apache2 confs
+- include: apache.yml

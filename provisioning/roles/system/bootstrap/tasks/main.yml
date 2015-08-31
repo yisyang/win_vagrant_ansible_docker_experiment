@@ -54,10 +54,10 @@
   copy: src={{ ssh_user_vimrc }} dest=/home/{{ ssh_user }}/.vimrc owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset or new_user.changed
 - name: Bootstrap | User | Vim | Create dir ~/.vim
-  file: dest=/home/{{ ssh_user }}/.vim state=directory owner={{ ssh_user }} group={{ ssh_user }}
+  file: path=/home/{{ ssh_user }}/.vim state=directory owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset or new_user.changed
 - name: Bootstrap | User | Vim | Create dir ~/.vim/colors
-  file: dest=/home/{{ ssh_user }}/.vim/colors state=directory owner={{ ssh_user }} group={{ ssh_user }}
+  file: path=/home/{{ ssh_user }}/.vim/colors state=directory owner={{ ssh_user }} group={{ ssh_user }}
   when: ssh_user_reset or new_user.changed
 - name: Bootstrap | User | Vim | Transfer colorschemes
   copy: src=vim/{{ item }}.vim dest=/home/{{ ssh_user }}/.vim/colors/{{ item }}.vim owner={{ ssh_user }} group={{ ssh_user }}

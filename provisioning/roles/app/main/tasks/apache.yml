@@ -1,0 +1,51 @@
+---
+# File: apache.yml
+# Type: task
+# Part: App/Main
+
+- name: App | Main | Create required project directories
+  file: path={{ item.ssl_dir }} state=directory owner={{ item.owner }} group={{ item.group }}
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined
+
+- name: App | Main | Generate SSL key and cert for domains with self-signed certs
+  command: openssl req -subj "{{ system_mail_generate_cert_subject }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ item.ssl.key.dest }} -out {{ item.ssl.cert.dest }}
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.self_signed
+
+- name: App | Main | Copy SSL key
+  copy: src={{ item.ssl.key.src }} dest={{ item.ssl.key.dest }} owner={{ item.owner }} group={{ item.group }}
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.key.src is defined
+
+- name: App | Main | Copy SSL cert
+  copy: src={{ item.ssl.cert.src }} dest={{ item.ssl.cert.dest }} owner={{ item.owner }} group={{ item.group }}
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.cert.src is defined
+
+- name: App | Main | Copy SSL ca
+  copy: src={{ item.ssl.ca.src }} dest={{ item.ssl.ca.dest }} owner={{ item.owner }} group={{ item.group }}
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.ca is defined and item.ssl.ca.src is defined
+
+- name: App | Main | Update permissions on SSL key
+  file: path={{ item.ssl.key.dest }} mode=0600 state=file
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined
+
+- name: App | Main | Generate apache conf
+  template: src=site-available.conf.j2 dest=/etc/apache2/sites-available/{{ item.fqdn }}.conf
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length
+  notify: Restart apache2
+
+- name: App | Main | Disable default site
+  file: path=/etc/apache2/sites-enabled/000-default.conf state=absent
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length
+
+- name: App | Main | Enable sites
+  file: src=/etc/apache2/sites-available/{{ item.fqdn }}.conf dest=/etc/apache2/sites-enabled/{{ item.fqdn }}.conf state=link
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length
+  notify: Restart apache2
