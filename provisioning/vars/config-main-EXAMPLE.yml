@@ -78,6 +78,7 @@ app_git_repos:
 app_domains:
   - fqdn: "example.com"
     fqdn_alias: "anotherexample.com, alt.example.com"
+    ssl_dir: "/home/{{ web_user }}/helloworld/ssl"
     app_dir: "/home/{{ web_user }}/helloworld/app"
     owner: "{{ web_user }}"
     group: "{{ web_user_group }}"

@@ -2,7 +2,7 @@
 ServerName {{ item.fqdn }}
 {% if item.fqdn_alias -%}
 ServerAlias {{ item.fqdn_alias }}
-{%- endif %}
+{% endif %}
 DocumentRoot "{{ item.app_dir }}"
 
 RewriteEngine On
@@ -28,7 +28,7 @@ AllowOverride All
 ServerName {{ item.fqdn }}
 {% if item.fqdn_alias -%}
 ServerAlias {{ item.fqdn_alias }}
-{%- endif %}
+{% endif %}
 DocumentRoot "{{ item.app_dir }}"
 
 RewriteEngine On
@@ -40,7 +40,7 @@ SSLCertificateFile    "{{ item.ssl.cert.dest }}"
 SSLCertificateKeyFile "{{ item.ssl.key.dest }}"
 {% if item.ssl.ca -%}
 SSLCACertificateFile  "{{ item.ssl.ca.dest }}"
-{%- endif %}
+{% endif %}
 
 <Directory />
 Order Deny,Allow
@@ -61,4 +61,4 @@ SSLOptions +StdEnvVars +StrictRequire
 </Location>
 </VirtualHost>
 </IfModule>
-{%- endif %}
+{% endif %}
