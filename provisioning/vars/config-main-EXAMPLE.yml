@@ -54,7 +54,7 @@ system_mail_domains:
 database_mysql_root_password: "nobodyknowsthepassword"
 
 # App / Git
-git_app_repos:
+app_git_repos:
   - repo: "https://github.com/drnic/php-helloworld.git"
 #    key_file: "{{ ssh_user_gitkey }}"
     version: "master"
@@ -64,24 +64,6 @@ git_app_repos:
     update_to_latest: true # Avoiding the key "update" as it causes a conflict with using with_items
     force: true
     link: "/home/{{ ssh_user }}/link_to_helloworld_app"
-# If set, config file for this site will be auto-generated at /etc/apache2/sites-available and symlinked to sites-enabled
-    apache2_config:
-      fqdn: "example.com"
-      fqdn_alias: "anotherexample.com, alt.example.com"
-      project_dir: "/home/{{ web_user }}/helloworld"
-      app_dir: "/home/{{ web_user }}/helloworld/app"
-      ssl:
-        cert:
-#          src: '/files/example_ssl.cert'
-          dest: "/home/{{ web_user }}/helloworld/ssl/ssl_cert.crt"
-        key:
-#          src: '/files/example_ssl.key'
-          dest: "/home/{{ web_user }}/helloworld/ssl/ssl_key.key"
-        ca:
-#          src: '/files/example_ssl.ca.cert'
-          dest: "/home/{{ web_user }}/helloworld/ssl/ssl_ca.crt"
-        self-signed: true
-
 #  - repo: "git@github.com:yourusername/yourapp.git"
 #    key_file: "{{ ssh_user_gitkey }}"
 #    version: "master"
@@ -90,3 +72,23 @@ git_app_repos:
 #    group: "{{ ssh_user_group }}"
 #    update_to_latest: yes
 #    force: true
+
+# App / Apache2
+# If set, config file for this site will be auto-generated at /etc/apache2/sites-available and symlinked to sites-enabled
+app_domains:
+  - fqdn: "example.com"
+    fqdn_alias: "anotherexample.com, alt.example.com"
+    app_dir: "/home/{{ web_user }}/helloworld/app"
+    owner: "{{ web_user }}"
+    group: "{{ web_user_group }}"
+    ssl:
+      key:
+#        src: '/files/example_ssl.key'
+        dest: "/home/{{ web_user }}/helloworld/ssl/ssl_key.key"
+      cert:
+#        src: '/files/example_ssl.cert'
+        dest: "/home/{{ web_user }}/helloworld/ssl/ssl_cert.crt"
+#      ca:
+#        src: '/files/example_ssl.ca.cert'
+#        dest: "/home/{{ web_user }}/helloworld/ssl/ssl_ca.crt"
+      self_signed: true

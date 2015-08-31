@@ -5,8 +5,8 @@
 
 - name: App | Main | Create required project directories
   file: dest={{ item.dest }} state=directory owner={{ item.owner }} group={{ item.group }}
-  with_items: git_app_repos
-  when: git_app_repos is defined
+  with_items: app_git_repos
+  when: app_git_repos is defined
 
 - name: App | Main | Checkout repos from Git
   git: >-
@@ -17,16 +17,16 @@
     force={{ item.force }}
     key_file={{ item.key_file }}
     accept_hostkey=true
-  with_items: git_app_repos
-  when: git_app_repos is defined and item.key_file is defined
+  with_items: app_git_repos
+  when: app_git_repos is defined and item.key_file is defined
   ignore_errors: true
 
 - name: App | Main | Ensure that project files are owned by correct users and groups
   file: dest={{ item.dest }} state=directory owner={{ item.owner }} group={{ item.group }}
-  with_items: git_app_repos
-  when: git_app_repos is defined
+  with_items: app_git_repos
+  when: app_git_repos is defined
 
 - name: App | Main | Create project links
   file: src="{{ item.dest }}" dest="{{ item.link }}" state=link
-  with_items: git_app_repos
+  with_items: app_git_repos
   when: item.link is defined

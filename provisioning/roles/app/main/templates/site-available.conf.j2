@@ -10,12 +10,11 @@ RewriteEngine On
 ErrorLog  ${APACHE_LOG_DIR}/{{ item.fqdn }}.error.log
 CustomLog ${APACHE_LOG_DIR}/{{ item.fqdn }}.access.log combined
 
-{% if item.project_dir -%}
-<Directory "{{ item.project_dir }}">
-Order Allow,Deny
+<Directory />
+Order Deny,Allow
 Deny from all
 </Directory>
-{%- endif %}
+
 <Directory "{{ item.app_dir }}">
 Order Allow,Deny
 Allow from all
@@ -43,12 +42,11 @@ SSLCertificateKeyFile "{{ item.ssl.key.dest }}"
 SSLCACertificateFile  "{{ item.ssl.ca.dest }}"
 {%- endif %}
 
-{% if item.project_dir -%}
-<Directory "{{ item.project_dir }}">
-Order Allow,Deny
+<Directory />
+Order Deny,Allow
 Deny from all
 </Directory>
-{%- endif %}
+
 <Directory "{{ item.app_dir }}">
 Order Allow,Deny
 Allow from all
