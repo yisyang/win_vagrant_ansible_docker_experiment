@@ -92,4 +92,7 @@ app_domains:
 #      ca:
 #        src: '/files/example_ssl.ca.cert'
 #        dest: "/var/www/helloworld/ssl/ssl_ca.crt"
+      force_ssl: true
       self_signed: true
+#      reverse_proxy:
+#        dest: "http://localhost:8080/"

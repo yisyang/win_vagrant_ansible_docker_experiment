@@ -33,6 +33,16 @@
   with_items: app_domains
   when: app_domains is defined and app_domains|length and item.ssl is defined
 
+- name: App | Main | Enable Apache 2 module - proxy
+  apache2_module: state=present name=proxy
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.reverse_proxy is defined
+
+- name: App | Main | Enable Apache 2 module - proxy_http
+  apache2_module: state=present name=proxy_http
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.reverse_proxy is defined
+
 - name: App | Main | Generate apache conf
   template: src=site-available.conf.j2 dest=/etc/apache2/sites-available/{{ item.fqdn }}.conf
   with_items: app_domains
