@@ -96,3 +96,4 @@ app_domains:
       self_signed: true
 #      reverse_proxy:
 #        dest: "http://localhost:8080/"
+#        preserve_host: true
