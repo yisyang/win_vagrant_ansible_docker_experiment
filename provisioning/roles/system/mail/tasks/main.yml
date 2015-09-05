@@ -76,11 +76,23 @@
 # Misc
 
 - name: System | Mail | Generate SSL key and cert
-  command: openssl req -subj "{{ system_mail_generate_cert_subject }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ system_mail_tls_key_file }} -out {{ system_mail_tls_cert_file }}
-  when: system_mail_domains is defined and system_mail_domains|length
+  command: openssl req -subj "{{ system_mail_ssl.generate_cert_subject }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ system_mail_ssl.key.dest }} -out {{ system_mail_ssl.cert.dest }}
+  when: system_mail_ssl is defined and system_mail_ssl.self_signed
+
+- name: System | Mail | Copy SSL key
+  copy: src={{ system_mail_ssl.key.src }} dest={{ system_mail_ssl.key.dest | default('/etc/dovecot/private/tls_key.key') }}
+  when: system_mail_ssl is defined and system_mail_ssl.key is defined and system_mail_ssl.key.src is defined
+
+- name: System | Mail | Copy SSL cert
+  copy: src={{ system_mail_ssl.cert.src }} dest={{ system_mail_ssl.cert.dest | default('/etc/dovecot/tls_cert.crt') }}
+  when: system_mail_ssl is defined and system_mail_ssl.cert is defined and system_mail_ssl.cert.src is defined
+
+- name: System | Mail | Copy CA cert
+  copy: src={{ system_mail_ssl.ca.src }} dest={{ system_mail_ssl.ca.dest | default('/etc/dovecot/tls_ca.crt') }}
+  when: system_mail_ssl is defined and system_mail_ssl.ca is defined and system_mail_ssl.ca.src is defined
 
 - name: System | Mail | Update permissions on SSL key
-  file: path={{ system_mail_tls_key_file }} mode=0600 state=file
+  file: path={{ system_mail_ssl.key.dest | default('/etc/dovecot/private/tls_key.key') }} mode=0600 state=file
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Create system mail user group
@@ -101,8 +113,8 @@
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Update mail folders permissions
-  file: path={{ item.dest }} owner={{ item.owner }} group={{ item.group }} mode={{ item.mode | default('0644') }} recurse=yes state=directory
+  file: path={{ item.dest }} owner={{ item.owner }} group={{ item.group }} mode={{ item.mode }} recurse=yes state=directory
   with_items:
-    - { dest: '/var/mail', owner: "{{ system_mail_user }}", group: "{{ system_mail_user }}" }
+    - { dest: '/var/mail', owner: "{{ system_mail_user }}", group: "{{ system_mail_user }}", mode: 'u=rwX,g=rX,o=rX' }
     - { dest: '/etc/dovecot', owner: "{{ system_mail_user }}", group: 'dovecot', mode: 'o-rwx' }
   when: system_mail_domains is defined and system_mail_domains|length

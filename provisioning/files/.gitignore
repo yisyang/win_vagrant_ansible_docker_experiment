@@ -1,2 +1,4 @@
 pubkey
 gitkey
+ssl/*.key
+ssl/*.crt
