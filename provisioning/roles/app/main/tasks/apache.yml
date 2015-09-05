@@ -9,7 +9,7 @@
   when: app_domains is defined and app_domains|length and item.ssl is defined
 
 - name: App | Main | Generate SSL key and cert for domains with self-signed certs
-  command: openssl req -subj "{{ system_mail_generate_cert_subject }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ item.ssl.key.dest }} -out {{ item.ssl.cert.dest }}
+  command: openssl req -subj "{{ item.ssl.generate_cert_subject }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ item.ssl.key.dest }} -out {{ item.ssl.cert.dest }}
   with_items: app_domains
   when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.self_signed
 
@@ -32,6 +32,16 @@
   file: path={{ item.ssl.key.dest }} mode=0600 state=file
   with_items: app_domains
   when: app_domains is defined and app_domains|length and item.ssl is defined
+
+- name: App | Main | Enable Apache 2 module - proxy
+  apache2_module: state=present name=proxy
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.reverse_proxy is defined
+
+- name: App | Main | Enable Apache 2 module - proxy_http
+  apache2_module: state=present name=proxy_http
+  with_items: app_domains
+  when: app_domains is defined and app_domains|length and item.ssl is defined and item.ssl.reverse_proxy is defined
 
 - name: App | Main | Generate apache conf
   template: src=site-available.conf.j2 dest=/etc/apache2/sites-available/{{ item.fqdn }}.conf

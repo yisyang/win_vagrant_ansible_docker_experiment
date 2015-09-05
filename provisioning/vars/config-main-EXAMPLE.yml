@@ -31,8 +31,26 @@ system_mail_mysql_user: "mailuser"
 system_mail_mysql_user_password: "mailuserpass"
 system_mail_mysql_database: "mailserver"
 system_mail_default_domain: "domain1.com"
-system_mail_generate_cert: true
-system_mail_generate_cert_subject: "/C=US/ST=California/L=Los Angeles/O=Example Company/OU=DevOps/CN={{ system_mail_default_domain }}/emailAddress=admin@{{ system_mail_default_domain }}/subjectAltName=DNS.1={{ system_mail_default_domain }},DNS.2=subdomain.domain1.com,DNS.3=domain2.com"
+
+# SSL configs for mail server
+#
+# The provisioner assumes that the mail server that you are provisioning will have only 1 IP address.
+# Although it is possible to put more domains onto 1 IP, dovecot does not very well with SSL on virtual hosts.
+#
+# If you have trouble connecting to your mail servers through 3rd party apps such as GMail, you can either get a SSL
+# for all fully qualified domain names, or to have SSL for a primary domain and connect to every mail account through
+# the mail server of the primary domain.
+#
+# If self_signed is set to true, a private key and self-signed SSL cert will be generated. It will NOT work with GMail.
+system_mail_ssl:
+#  key:
+#    src: 'files/example_ssl.key'
+#  cert:
+#    src: 'files/example_ssl.cert'
+  self_signed: true
+  generate_cert_subject: "/C=US/ST=California/L=Los Angeles/O=Example Company/OU=DevOps/CN={{ system_mail_default_domain }}/emailAddress=admin@{{ system_mail_default_domain }}/subjectAltName=DNS.1={{ system_mail_default_domain }},DNS.2=subdomain.domain1.com,DNS.3=domain2.com"
+
+# Mail domain and user configs
 system_mail_domains:
   - name: "domain1.com"
     users:
@@ -84,12 +102,17 @@ app_domains:
     group: "{{ web_user_group }}"
     ssl:
       key:
-#        src: '/files/example_ssl.key'
+#        src: 'files/example_ssl.key'
         dest: "/var/www/helloworld/ssl/ssl_key.key"
       cert:
-#        src: '/files/example_ssl.cert'
+#        src: 'files/example_ssl.cert'
         dest: "/var/www/helloworld/ssl/ssl_cert.crt"
 #      ca:
-#        src: '/files/example_ssl.ca.cert'
+#        src: 'files/example_ssl.ca.cert'
 #        dest: "/var/www/helloworld/ssl/ssl_ca.crt"
+      force_ssl: true
       self_signed: true
+      generate_cert_subject: "/C=US/ST=California/L=Los Angeles/O=Example Company/OU=DevOps/CN=example.com/emailAddress=admin@example.com/subjectAltName=DNS.1=*.example.com,DNS.2=subdomain.domain1.com,DNS.3=domain2.com"
+#      reverse_proxy:
+#        dest: "http://localhost:8080/"
+#        preserve_host: true

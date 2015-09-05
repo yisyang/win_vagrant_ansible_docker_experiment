@@ -9,8 +9,8 @@ ssl = required
 # dropping root privileges, so keep the key file unreadable by anyone but
 # root. Included doc/mkcert.sh can be used to easily generate self-signed
 # certificate, just make sure to update the domains in dovecot-openssl.cnf
-ssl_cert = <{{ system_mail_tls_cert_file }}
-ssl_key = <{{ system_mail_tls_key_file }}
+ssl_cert = <{{ system_mail_ssl.cert.dest | default('/etc/dovecot/tls_cert.crt') }}
+ssl_key = <{{ system_mail_ssl.key.dest | default('/etc/dovecot/private/tls_key.key') }}
 
 # If key file is password protected, give the password here. Alternatively
 # give it when starting dovecot with -p parameter. Since this file is often
@@ -21,7 +21,9 @@ ssl_key = <{{ system_mail_tls_key_file }}
 # PEM encoded trusted certificate authority. Set this only if you intend to use
 # ssl_verify_client_cert=yes. The file should contain the CA certificate(s)
 # followed by the matching CRL(s). (e.g. ssl_ca = </etc/ssl/certs/ca.pem)
-#ssl_ca = </etc/dovecot/tls_ca.crt
+{% if system_mail_ssl is defined and system_mail_ssl.ca is defined and not system_mail_ssl.self_signed %}
+ssl_ca = <{{ system_mail_ssl.ca.dest | default('/etc/dovecot/tls_ca.crt') }}
+{% endif %}
 
 
 # Require that CRL check succeeds for client certificates.
