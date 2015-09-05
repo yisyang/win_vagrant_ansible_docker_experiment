@@ -33,7 +33,15 @@ system_mail_mysql_database: "mailserver"
 system_mail_default_domain: "domain1.com"
 
 # SSL configs for mail server
-# If self_signed is set to true, a private key and self-signed SSL cert will be generated and placed in the paths above
+#
+# The provisioner assumes that the mail server that you are provisioning will have only 1 IP address.
+# Although it is possible to put more domains onto 1 IP, dovecot does not very well with SSL on virtual hosts.
+#
+# If you have trouble connecting to your mail servers through 3rd party apps such as GMail, you can either get a SSL
+# for all fully qualified domain names, or to have SSL for a primary domain and connect to every mail account through
+# the mail server of the primary domain.
+#
+# If self_signed is set to true, a private key and self-signed SSL cert will be generated. It will NOT work with GMail.
 system_mail_ssl:
 #  key:
 #    src: 'files/example_ssl.key'
@@ -43,11 +51,6 @@ system_mail_ssl:
   generate_cert_subject: "/C=US/ST=California/L=Los Angeles/O=Example Company/OU=DevOps/CN={{ system_mail_default_domain }}/emailAddress=admin@{{ system_mail_default_domain }}/subjectAltName=DNS.1={{ system_mail_default_domain }},DNS.2=subdomain.domain1.com,DNS.3=domain2.com"
 
 # Mail domain and user configs
-# Note: the provisioner assumes that you have only 1 IP address, dovecot does not detect virtual hosts properly,
-# and so putting more than one domain on the same IP with different SSL certificates can be problematic.
-# The provisioner here assumes that you'll simply use one domain to send mail or have a wildcard certificate
-# that covers every domain that will send mail.
-# A self-signed cert works in sending/receiving mail from the server, but will not work in services such as GMail.
 system_mail_domains:
   - name: "domain1.com"
     users:
