@@ -47,16 +47,17 @@
   user: name={{ system_mail_mysql_user }} password={{ system_mail_mysql_user_password }}
   when: system_mail_domains is defined and system_mail_domains|length and system_mail_mysql_user_password is defined
 
-- name: System | Mail | Copy MySQL database import file
-  template: src=mailserver.sql.j2 dest=/home/{{ system_mail_mysql_user }}/mailserver.sql owner={{ system_mail_mysql_user }} group={{ system_mail_mysql_user }} mode=0644 backup=yes
+- name: System | Mail | Copy temporary MySQL database import file
+  template: src=mailserver.sql.j2 dest=/tmp/ansible_system_mail_mailserver.sql owner={{ system_mail_mysql_user }} group={{ system_mail_mysql_user }} mode=0644 backup=yes
   when: system_mail_domains is defined and system_mail_domains|length
+  changed_when: false
 
 - name: System | Mail | Create MySQL database
   mysql_db: name={{ system_mail_mysql_database }} state=present
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Import database data
-  mysql_db: name={{ system_mail_mysql_database }} target=/home/{{ system_mail_mysql_user }}/mailserver.sql state=import
+  mysql_db: name={{ system_mail_mysql_database }} target=/tmp/ansible_system_mail_mailserver.sql state=import
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Create MySQL mail user and authorize to database
@@ -64,38 +65,80 @@
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Remove database import file
-  file: path=/home/{{ system_mail_mysql_user }}/mailserver.sql state=absent
+  file: path=/tmp/ansible_system_mail_mailserver.sql state=absent
   when: system_mail_domains is defined and system_mail_domains|length
+  changed_when: false
 
 
 # Configure Postfix
+# Templating is separated into 5 tasks to work around Ansible "changed' status
 
-- name: System | Mail | Apply postfix config templates
-  template: src={{ item.src }} dest={{ item.dest }} mode=0644 backup=yes
-  with_items:
-    - { src: 'postfix/mailname.j2', dest: '/etc/mailname' }
-    - { src: 'postfix/main.cf.j2', dest: '/etc/postfix/main.cf' }
-    - { src: 'postfix/master.cf.j2', dest: '/etc/postfix/master.cf' }
-    - { src: 'postfix/mysql-virtual-mailbox-domains.cf.j2', dest: '/etc/postfix/mysql-virtual-mailbox-domains.cf' }
-    - { src: 'postfix/mysql-virtual-mailbox-maps.cf.j2', dest: '/etc/postfix/mysql-virtual-mailbox-maps.cf' }
-    - { src: 'postfix/mysql-virtual-alias-maps.cf.j2', dest: '/etc/postfix/mysql-virtual-alias-maps.cf' }
+- name: System | Mail | Resolve postfix config templates
+  template: src={{ item.src }} dest={{ item.tmp_file }}
+  with_items: system_mail_postfix_config_files
+  when: system_mail_domains is defined and system_mail_domains|length
+  changed_when: false
+- name: System | Mail | Compute checksum of old config
+  stat: path={{ item.dest }} get_checksum=true
+  with_items: system_mail_postfix_config_files
+  changed_when: false
+  register: system_mail_postfix_config_checksum_old
+  when: system_mail_domains is defined and system_mail_domains|length
+  ignore_errors: true
+- name: System | Mail | Compute checksum of new config
+  stat: path={{ item.tmp_file }} get_checksum=true
+  with_items: system_mail_postfix_config_files
+  changed_when: false
+  register: system_mail_postfix_config_checksum_new
+  when: system_mail_domains is defined and system_mail_domains|length
+- name: System | Mail | Move postfix config files where checksum is different
+  shell: |
+    mv {{ item.1.dest }} {{ item.1.dest }}.{{ ansible_date_time.date }}@{{ ansible_date_time.time }}~
+    mv {{ item.1.tmp_file }} {{ item.1.dest }}
+  with_indexed_items: system_mail_postfix_config_files
   notify: Restart postfix
+  when: system_mail_domains is defined and system_mail_domains|length and (system_mail_postfix_config_checksum_old is not defined or not system_mail_postfix_config_checksum_old.results[item.0].stat.exists or system_mail_postfix_config_checksum_new.results[item.0].stat.checksum != system_mail_postfix_config_checksum_old.results[item.0].stat.checksum)
+  ignore_errors: true
+- name: System | Mail | Remove temporary config files
+  file: path={{ item.tmp_file }} state=absent
+  with_items: system_mail_postfix_config_files
+  changed_when: false
   when: system_mail_domains is defined and system_mail_domains|length
 
 
 # Configure Dovecot
+# Templating is separated into 5 tasks to work around Ansible "changed' status
 
-- name: System | Mail | Apply dovecot config templates
-  template: src={{ item.src }} dest={{ item.dest }} mode=0644 backup=yes
-  with_items:
-    - { src: 'dovecot/10-auth.conf.j2', dest: '/etc/dovecot/conf.d/10-auth.conf' }
-    - { src: 'dovecot/10-mail.conf.j2', dest: '/etc/dovecot/conf.d/10-mail.conf' }
-    - { src: 'dovecot/10-master.conf.j2', dest: '/etc/dovecot/conf.d/10-master.conf' }
-    - { src: 'dovecot/10-ssl.conf.j2', dest: '/etc/dovecot/conf.d/10-ssl.conf' }
-    - { src: 'dovecot/auth-sql.conf.ext.j2', dest: '/etc/dovecot/conf.d/auth-sql.conf.ext' }
-    - { src: 'dovecot/dovecot.conf.j2', dest: '/etc/dovecot/dovecot.conf' }
-    - { src: 'dovecot/dovecot-sql.conf.ext.j2', dest: '/etc/dovecot/dovecot-sql.conf.ext' }
+- name: System | Mail | Resolve dovecot config templates
+  template: src={{ item.src }} dest={{ item.tmp_file }}
+  with_items: system_mail_dovecot_config_files
+  when: system_mail_domains is defined and system_mail_domains|length
+  changed_when: false
+- name: System | Mail | Compute checksum of old config
+  stat: path={{ item.dest }} get_checksum=true
+  with_items: system_mail_dovecot_config_files
+  changed_when: false
+  register: system_mail_dovecot_config_checksum_old
+  when: system_mail_domains is defined and system_mail_domains|length
+  ignore_errors: true
+- name: System | Mail | Compute checksum of new config
+  stat: path={{ item.tmp_file }} get_checksum=true
+  with_items: system_mail_dovecot_config_files
+  changed_when: false
+  register: system_mail_dovecot_config_checksum_new
+  when: system_mail_domains is defined and system_mail_domains|length
+- name: System | Mail | Move dovecot config files where checksum is different
+  shell: |
+    mv {{ item.1.dest }} {{ item.1.dest }}.{{ ansible_date_time.date }}@{{ ansible_date_time.time }}~
+    mv {{ item.1.tmp_file }} {{ item.1.dest }}
+  with_indexed_items: system_mail_dovecot_config_files
   notify: Restart dovecot
+  when: system_mail_domains is defined and system_mail_domains|length and (system_mail_dovecot_config_checksum_old is not defined or not system_mail_dovecot_config_checksum_old.results[item.0].stat.exists or system_mail_dovecot_config_checksum_new.results[item.0].stat.checksum != system_mail_dovecot_config_checksum_old.results[item.0].stat.checksum)
+  ignore_errors: true
+- name: System | Mail | Remove temporary config files
+  file: path={{ item.tmp_file }} state=absent
+  with_items: system_mail_dovecot_config_files
+  changed_when: false
   when: system_mail_domains is defined and system_mail_domains|length
 
 

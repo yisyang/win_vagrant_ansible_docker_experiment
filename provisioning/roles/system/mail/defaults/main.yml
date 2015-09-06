@@ -17,3 +17,20 @@ system_mail_apt_modules:
 system_mail_ssl:
   self_signed: true
   generate_cert_subject: "/C=US/O={{ system_mail_default_domain }}/CN={{ system_mail_default_domain }}"
+
+system_mail_postfix_config_files:
+    - { src: 'postfix/mailname.j2', tmp_file: '/tmp/ansible_system_mail_mailname', dest: '/etc/mailname' }
+    - { src: 'postfix/main.cf.j2', tmp_file: '/tmp/ansible_system_mail_postfix_main.cf', dest: '/etc/postfix/main.cf' }
+    - { src: 'postfix/master.cf.j2', tmp_file: '/tmp/ansible_system_mail_postfix_master.cf', dest: '/etc/postfix/master.cf' }
+    - { src: 'postfix/mysql-virtual-mailbox-domains.cf.j2', tmp_file: '/tmp/ansible_system_mail_postfix_mysql-virtual-mailbox-domains.cf', dest: '/etc/postfix/mysql-virtual-mailbox-domains.cf' }
+    - { src: 'postfix/mysql-virtual-mailbox-maps.cf.j2', tmp_file: '/tmp/ansible_system_mail_postfix_mysql-virtual-mailbox-maps.cf', dest: '/etc/postfix/mysql-virtual-mailbox-maps.cf' }
+    - { src: 'postfix/mysql-virtual-alias-maps.cf.j2', tmp_file: '/tmp/ansible_system_mail_postfix_mysql-virtual-alias-maps.cf', dest: '/etc/postfix/mysql-virtual-alias-maps.cf' }
+
+system_mail_dovecot_config_files:
+    - { src: 'dovecot/10-auth.conf.j2', tmp_file: '/tmp/dovecot_conf.d_10-auth.conf', dest: '/etc/dovecot/conf.d/10-auth.conf' }
+    - { src: 'dovecot/10-mail.conf.j2', tmp_file: '/tmp/dovecot_conf.d_10-mail.conf', dest: '/etc/dovecot/conf.d/10-mail.conf' }
+    - { src: 'dovecot/10-master.conf.j2', tmp_file: '/tmp/dovecot_conf.d_10-master.conf', dest: '/etc/dovecot/conf.d/10-master.conf' }
+    - { src: 'dovecot/10-ssl.conf.j2', tmp_file: '/tmp/dovecot_conf.d_10-ssl.conf', dest: '/etc/dovecot/conf.d/10-ssl.conf' }
+    - { src: 'dovecot/auth-sql.conf.ext.j2', tmp_file: '/tmp/dovecot_conf.d_auth-sql.conf.ext', dest: '/etc/dovecot/conf.d/auth-sql.conf.ext' }
+    - { src: 'dovecot/dovecot.conf.j2', tmp_file: '/tmp_dovecot_dovecot.conf', dest: '/etc/dovecot/dovecot.conf' }
+    - { src: 'dovecot/dovecot-sql.conf.ext.j2', tmp_file: '/tmp/dovecot_dovecot-sql.conf.ext', dest: '/etc/dovecot/dovecot-sql.conf.ext' }
