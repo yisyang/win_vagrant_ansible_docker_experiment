@@ -96,6 +96,12 @@
   when: web_user_password is defined
   ignore_errors: true
 
+- name: Bootstrap | System | Set machine hostname
+  copy:
+    dest: /etc/hostname
+    content: "{{ system_machine_name }}"
+  when: system_machine_name is defined
+
 # Get machine name
 - name: Bootstrap | System | Get machine hostname
   command: cat /etc/hostname
