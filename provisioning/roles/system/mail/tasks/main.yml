@@ -29,7 +29,11 @@
   template: src=mailserver.sql.j2 dest=/home/{{ system_mail_mysql_user }}/mailserver.sql owner={{ system_mail_mysql_user }} group={{ system_mail_mysql_user }} mode=0644 backup=yes
   when: system_mail_domains is defined and system_mail_domains|length
 
-- name: System | Mail | Create MySQL database and import data
+- name: System | Mail | Create MySQL database
+  mysql_db: name={{ system_mail_mysql_database }} state=present
+  when: system_mail_domains is defined and system_mail_domains|length
+
+- name: System | Mail | Import database data
   mysql_db: name={{ system_mail_mysql_database }} target=/home/{{ system_mail_mysql_user }}/mailserver.sql state=import
   when: system_mail_domains is defined and system_mail_domains|length
 

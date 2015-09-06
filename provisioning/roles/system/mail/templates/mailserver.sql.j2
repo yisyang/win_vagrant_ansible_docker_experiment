@@ -54,18 +54,20 @@ CREATE TABLE `virtual_aliases` (
         {%- endfor -%}
     {%- endfor -%}
 
+    {% if temp_mailserver_sql_aliases|length %}
 LOCK TABLES `virtual_aliases` WRITE;
 /*!40000 ALTER TABLE `virtual_aliases` DISABLE KEYS */;
 INSERT INTO `virtual_aliases`
 (`domain_id`, `source`, `destination`)
 VALUES
-    {%- for item in temp_mailserver_sql_aliases -%}
-        {{- ',' if not loop.first }}
-        ({{ item.domain_id }}, "{{ item.src }}", "{{ item.dest }}")
-    {%- endfor -%}
+        {%- for item in temp_mailserver_sql_aliases -%}
+            {{- ',' if not loop.first }}
+            ({{ item.domain_id }}, "{{ item.src }}", "{{ item.dest }}")
+        {%- endfor -%}
 ;
 /*!40000 ALTER TABLE `virtual_aliases` ENABLE KEYS */;
 UNLOCK TABLES;
+    {% endif %}
 
 {% endif %}
 
@@ -141,18 +143,20 @@ CREATE TABLE `virtual_users` (
         {%- endfor -%}
     {%- endfor -%}
 
+    {% if temp_mailserver_sql_users|length %}
 LOCK TABLES `virtual_users` WRITE;
 /*!40000 ALTER TABLE `virtual_users` DISABLE KEYS */;
 INSERT INTO `virtual_users`
 (`domain_id`, `password`, `email`)
 VALUES
-    {%- for item in temp_mailserver_sql_users -%}
-        {{- ',' if not loop.first }}
-        ({{ item.domain_id }}, ENCRYPT("{{ item.pass }}", CONCAT('$6$', SUBSTRING(SHA(RAND()), -16))), "{{ item.email }}")
-    {%- endfor -%}
+        {%- for item in temp_mailserver_sql_users -%}
+            {{- ',' if not loop.first }}
+            ({{ item.domain_id }}, ENCRYPT("{{ item.pass }}", CONCAT('$6$', SUBSTRING(SHA(RAND()), -16))), "{{ item.email }}")
+        {%- endfor -%}
 ;
 /*!40000 ALTER TABLE `virtual_users` ENABLE KEYS */;
 UNLOCK TABLES;
+    {% endif %}
 
 {% endif %}
 
