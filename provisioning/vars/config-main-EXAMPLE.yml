@@ -101,12 +101,12 @@ app_domains:
     owner: "{{ web_user }}"
     group: "{{ web_user_group }}"
     ssl:
-      key:
+#      key:
 #        src: 'files/example_ssl.key'
-        dest: "/var/www/helloworld/ssl/ssl_key.key"
-      cert:
+#        dest: "/var/www/helloworld/ssl/ssl_key.key"
+#      cert:
 #        src: 'files/example_ssl.cert'
-        dest: "/var/www/helloworld/ssl/ssl_cert.crt"
+#        dest: "/var/www/helloworld/ssl/ssl_cert.crt"
 #      ca:
 #        src: 'files/example_ssl.ca.cert'
 #        dest: "/var/www/helloworld/ssl/ssl_ca.crt"

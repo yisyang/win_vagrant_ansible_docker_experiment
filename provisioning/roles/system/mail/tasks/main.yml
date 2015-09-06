@@ -3,6 +3,28 @@
 # Type: task
 # Part: System/Mail
 
+# Prepare facts
+- name: System | Mail | Set SSL cert destination
+  set_fact:
+    system_mail_ssl_cert_dest: "{{ system_mail_ssl.cert.dest | default('/etc/dovecot/tls_cert.crt') }}"
+  when: system_mail_ssl is defined and system_mail_ssl.cert is defined
+
+- name: System | Mail | Set SSL cert destination
+  set_fact:
+    system_mail_ssl_cert_dest: "/etc/dovecot/tls_cert.crt"
+  when: system_mail_ssl is not defined or system_mail_ssl.cert is not defined
+
+- name: System | Mail | Set SSL key destination
+  set_fact:
+    system_mail_ssl_key_dest: "{{ system_mail_ssl.key.dest | default('/etc/dovecot/private/tls_key.key') }}"
+  when: system_mail_ssl is defined and system_mail_ssl.key is defined
+
+- name: System | Mail | Set SSL key destination
+  set_fact:
+    system_mail_ssl_key_dest: "/etc/dovecot/private/tls_key.key"
+  when: system_mail_ssl is not defined or system_mail_ssl.key is not defined
+
+
 # Install dependencies
 
 - name: System | Mail | Install requried apt modules
@@ -80,15 +102,15 @@
 # Misc
 
 - name: System | Mail | Generate SSL key and cert
-  command: openssl req -subj "{{ system_mail_ssl.generate_cert_subject }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ system_mail_ssl.key.dest }} -out {{ system_mail_ssl.cert.dest }}
+  command: openssl req -subj "{{ system_mail_ssl.generate_cert_subject | default('/C=US/O=localhost/CN=localhost') }}" -new -newkey rsa:2048 -sha256 -days 1100 -nodes -x509 -keyout {{ system_mail_ssl_key_dest }} -out {{ system_mail_ssl_cert_dest }}
   when: system_mail_ssl is defined and system_mail_ssl.self_signed
 
 - name: System | Mail | Copy SSL key
-  copy: src={{ system_mail_ssl.key.src }} dest={{ system_mail_ssl.key.dest | default('/etc/dovecot/private/tls_key.key') }}
+  copy: src={{ system_mail_ssl.key.src }} dest={{ system_mail_ssl_key_dest }}
   when: system_mail_ssl is defined and system_mail_ssl.key is defined and system_mail_ssl.key.src is defined
 
 - name: System | Mail | Copy SSL cert
-  copy: src={{ system_mail_ssl.cert.src }} dest={{ system_mail_ssl.cert.dest | default('/etc/dovecot/tls_cert.crt') }}
+  copy: src={{ system_mail_ssl.cert.src }} dest={{ system_mail_ssl_cert_dest }}
   when: system_mail_ssl is defined and system_mail_ssl.cert is defined and system_mail_ssl.cert.src is defined
 
 - name: System | Mail | Copy CA cert
@@ -96,7 +118,7 @@
   when: system_mail_ssl is defined and system_mail_ssl.ca is defined and system_mail_ssl.ca.src is defined
 
 - name: System | Mail | Update permissions on SSL key
-  file: path={{ system_mail_ssl.key.dest | default('/etc/dovecot/private/tls_key.key') }} mode=0600 state=file
+  file: path={{ system_mail_ssl_key_dest }} mode=0600 state=file
   when: system_mail_domains is defined and system_mail_domains|length
 
 - name: System | Mail | Create system mail user group
