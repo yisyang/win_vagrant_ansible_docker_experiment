@@ -25,6 +25,16 @@
         Allow from all
         AllowOverride All
     </Directory>
+
+    {%- if item.reverse_proxy %}
+    <Location />
+        ProxyPass "{{ item.reverse_proxy.dest }}"
+        ProxyPassReverse "{{ item.reverse_proxy.dest }}"
+        {%- if item.reverse_proxy.preserve_host %}
+        ProxyPreserveHost On
+        {%- endif %}
+    </Location>
+    {%- endif %}
 </VirtualHost>
 
 {% if item.ssl -%}
