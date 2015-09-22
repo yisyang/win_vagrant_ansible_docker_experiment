@@ -65,6 +65,12 @@
     - bp_rewrite.conf
     - bp_security.conf
 
+- name: Apache2 | Tweak security.conf - ServerTokens
+  action: lineinfile dest=/etc/apache2/conf-available/security.conf regexp="^ServerTokens" line="ServerTokens Prod" state=present
+
+- name: Apache2 | Tweak security.conf - ServerSignature
+  action: lineinfile dest=/etc/apache2/conf-available/security.conf regexp="^ServerSignature" line="ServerSignature Off" state=present
+
 ## Enable modules
 - name: Apache2 | Enable modules
   command: a2enmod {{ item }} creates=/etc/apache2/mods-enabled/{{ item }}.load
