@@ -26,12 +26,18 @@
         AllowOverride All
     </Directory>
 
-    {%- if item.reverse_proxy %}
+    {%- if item.reverse_proxy or item.add_header %}
     <Location />
+        {%- if item.add_header and item.add_header.auth %}
+        Header merge Access-Control-Allow-Headers "Authorization"
+        {%- endif %}
+
+        {%- if item.reverse_proxy %}
         ProxyPass "{{ item.reverse_proxy.dest }}"
         ProxyPassReverse "{{ item.reverse_proxy.dest }}"
         {%- if item.reverse_proxy.preserve_host %}
         ProxyPreserveHost On
+        {%- endif %}
         {%- endif %}
     </Location>
     {%- endif %}
@@ -69,6 +75,10 @@
     </Directory>
 
     <Location />
+        {%- if item.ssl.add_header and item.ssl.add_header.auth %}
+        Header merge Access-Control-Allow-Headers "Authorization"
+        {%- endif %}
+
         SSLRequireSSL On
         SSLVerifyClient None
         SSLVerifyDepth 1
