@@ -1,12 +1,17 @@
 ---
 # Ansible Variables
 
+# System / Bootstrap
+#system_machine_name: "machine_id.cluster_id"
+
 # System / SSH
 ssh_user: "scott" # Your ssh admin user into the guest machine
 ssh_user_group: "admin" # Your ssh user's group with password-less sudo privileges
 ssh_user_reset: false # true to re-provision all user settings (bash, vim, git, etc.)
 
-ssh_user_sshkey: "files/pubkey" # Path to your OpenSSH public key that you would like to add into ~/authorized_keys
+# Path to your OpenSSH public key file,
+# the contents of which you would like to add into ~/authorized_keys
+ssh_user_sshkey: "files/pubkey"
 #ssh_user_password: "dontneedone"
 
 # System / Web
@@ -14,10 +19,14 @@ web_user: "www" # If developing from remote machine, you will be using this user
 web_user_group: "www"
 #web_user_password: "dontneedone"
 web_user_sshkey: "{{ ssh_user_sshkey }}"
+apache_user: "{{ web_user }}"
+apache_group: "{{ web_user_group }}"
+nodejs_user: "{{ web_user }}"
+nodejs_group: "{{ web_user_group }}"
 
 # System / Git
-ssh_user_git_name: "Scott Yang"
-ssh_user_git_email: "yisyang@gmail.com"
+ssh_user_git_name: "Your Name"
+ssh_user_git_email: "your_git_email@example.com"
 ssh_user_gitkey: "files/gitkey" # Private key used to connect to github, not password protected, and MUST chmod to 0600
 # If defined, the git key will be copied into this destination on the provisioned machines
 # SSH config will be modified accordingly to use this key for github.com
@@ -59,9 +68,21 @@ system_mail_domains:
       - email: "me@domain1.com"
         pass: "EXAMPLE_PASSWORD"
     aliases:
-      - src: "webmaster@domain1.com"
+      - src: "abuse@domain1.com"
         dest: "you@domain1.com"
       - src: "admin@domain1.com"
+        dest: "you@domain1.com"
+      - src: "hostmaster@domain1.com"
+        dest: "you@domain1.com"
+      - src: "info@domain1.com"
+        dest: "you@domain1.com"
+      - src: "postmaster@domain1.com"
+        dest: "you@domain1.com"
+      - src: "root@domain1.com"
+        dest: "you@domain1.com"
+      - src: "support@domain1.com"
+        dest: "you@domain1.com"
+      - src: "webmaster@domain1.com"
         dest: "you@domain1.com"
   - name: "domain2.com"
     users:
@@ -113,6 +134,8 @@ app_domains:
       force_ssl: true
       self_signed: true
       generate_cert_subject: "/C=US/ST=California/L=Los Angeles/O=Example Company/OU=DevOps/CN=example.com/emailAddress=admin@example.com/subjectAltName=DNS.1=*.example.com,DNS.2=subdomain.domain1.com,DNS.3=domain2.com"
+#      add_header:
+#        auth: true
 #      reverse_proxy:
 #        dest: "http://localhost:8080/"
 #        preserve_host: true
