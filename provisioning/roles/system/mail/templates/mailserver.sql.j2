@@ -19,10 +19,12 @@
 -- Table structure for table `virtual_aliases`
 --
 
+{% if system_mail_no_reset isnt defined or not system_mail_no_reset %}
 DROP TABLE IF EXISTS `virtual_aliases`;
+{% endif %}
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `virtual_aliases` (
+CREATE TABLE IF NOT EXISTS `virtual_aliases` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) NOT NULL,
   `source` varchar(100) NOT NULL,
@@ -57,7 +59,7 @@ CREATE TABLE `virtual_aliases` (
     {% if temp_mailserver_sql_aliases|length %}
 LOCK TABLES `virtual_aliases` WRITE;
 /*!40000 ALTER TABLE `virtual_aliases` DISABLE KEYS */;
-INSERT INTO `virtual_aliases`
+INSERT IGNORE INTO `virtual_aliases`
 (`domain_id`, `source`, `destination`)
 VALUES
         {%- for item in temp_mailserver_sql_aliases -%}
@@ -75,10 +77,12 @@ UNLOCK TABLES;
 -- Table structure for table `virtual_domains`
 --
 
+{% if system_mail_no_reset isnt defined or not system_mail_no_reset %}
 DROP TABLE IF EXISTS `virtual_domains`;
+{% endif %}
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `virtual_domains` (
+CREATE TABLE IF NOT EXISTS `virtual_domains` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
@@ -93,7 +97,7 @@ CREATE TABLE `virtual_domains` (
 
 LOCK TABLES `virtual_domains` WRITE;
 /*!40000 ALTER TABLE `virtual_domains` DISABLE KEYS */;
-INSERT INTO `virtual_domains`
+INSERT IGNORE INTO `virtual_domains`
 (`id`, `name`)
 VALUES
     {%- for item in system_mail_domains -%}
@@ -110,10 +114,12 @@ UNLOCK TABLES;
 -- Table structure for table `virtual_users`
 --
 
+{% if system_mail_no_reset isnt defined or not system_mail_no_reset %}
 DROP TABLE IF EXISTS `virtual_users`;
+{% endif %}
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `virtual_users` (
+CREATE TABLE IF NOT EXISTS `virtual_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) NOT NULL,
   `password` varchar(106) NOT NULL,
@@ -146,7 +152,7 @@ CREATE TABLE `virtual_users` (
     {% if temp_mailserver_sql_users|length %}
 LOCK TABLES `virtual_users` WRITE;
 /*!40000 ALTER TABLE `virtual_users` DISABLE KEYS */;
-INSERT INTO `virtual_users`
+INSERT IGNORE INTO `virtual_users`
 (`domain_id`, `password`, `email`)
 VALUES
         {%- for item in temp_mailserver_sql_users -%}
