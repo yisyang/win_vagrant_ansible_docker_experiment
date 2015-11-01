@@ -23,7 +23,7 @@ alias h='history'
 alias j='jobs -l'
 alias ls='ls -hF --color --group-directories-first'
 alias ll='ls -lhFA --group-directories-first'
-alias lll='ls -lhFA --group-directories-first | less'
+alias lll='ls -lhFA --group-directories-first | less -r'
 
 # Pretty-print of some PATH variables:
 alias path='echo -e ${PATH//:/\\n}'
