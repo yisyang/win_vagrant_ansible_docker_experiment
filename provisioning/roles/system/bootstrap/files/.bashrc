@@ -17,12 +17,13 @@ alias mkdir='mkdir -p'
 
 # Misc shortcuts
 alias ..='cd ..'
-alias du='du -kh'
+alias dut='du -sh * 2>/dev/null | sort -rh | head -100'
 alias df='df -kTh'
 alias h='history'
 alias j='jobs -l'
-alias ls='ls -h --color'
-alias ll="ls -lv --group-directories-first"
+alias l='ls -hF --color --group-directories-first'
+alias ll='ls -lhFA --color --group-directories-first'
+alias lll='ls -lhFA --color --group-directories-first | less -r'
 
 # Pretty-print of some PATH variables:
 alias path='echo -e ${PATH//:/\\n}'
