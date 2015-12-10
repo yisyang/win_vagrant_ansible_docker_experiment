@@ -26,9 +26,9 @@ else
 endif
 
 try
-    colorscheme base16-default
+    colorscheme ir_black
 catch
-    colorscheme desert
+    colorscheme pablo
 endtry
 
 set background=dark
