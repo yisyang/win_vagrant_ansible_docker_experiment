@@ -1,1 +1,4 @@
 /fetched/*
+/vars/*
+!/vars/config-main-EXAMPLE.yml
+/pb-*
