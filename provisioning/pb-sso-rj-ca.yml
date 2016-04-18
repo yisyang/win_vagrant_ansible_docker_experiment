@@ -1,5 +1,5 @@
 ---
-# File: full_playbook.yml
+# File: pb-sso-rj-ca.yml
 # Type: playbook
 
 # Reminder - variable load order:
@@ -9,7 +9,7 @@
 # 4. inventory vars
 
 - name: Set global facts
-  hosts: all
+  hosts: sso-rj
   tags: always
   tasks:
     - set_fact: ansible_fetched_base=fetched/{{ group_names[0] | default('') }}/{{ inventory_hostname }}
@@ -22,7 +22,7 @@
     - role: system/debug
 
 - name: Apt update
-  hosts: all
+  hosts: sso-rj
   sudo: yes
   tags: apt_update
   tasks:
@@ -41,7 +41,7 @@
     - role: system/bootstrap # User bootstrap, add custom user with private key, add vim themes, update bashrc
       tags: system_bootstrap
   vars_files:
-    - vars/config-main.yml
+    - vars/config-main-sso-rj-ca.yml
 
 - name: Install various data dependencies
   hosts: init:dev:mail:data
@@ -50,7 +50,7 @@
     - role: database/mysql
       tags: database_mysql
   vars_files:
-    - vars/config-main.yml
+    - vars/config-main-sso-rj-ca.yml
 
 - name: Install various data dependencies
   hosts: dev:data
@@ -59,7 +59,7 @@
     - role: database/redis
       tags: database_redis
   vars_files:
-    - vars/config-main.yml
+    - vars/config-main-sso-rj-ca.yml
 
 - name: Install elastic search
   hosts: dev:search
@@ -68,7 +68,7 @@
     - role: database/elasticsearch
       tags: database_elasticsearch
   vars_files:
-    - vars/config-main.yml
+    - vars/config-main-sso-rj-ca.yml
     - vars/config-elasticsearch.yml
 
 - name: Install mail server
@@ -80,10 +80,10 @@
     - role: system/mail # Install postfix, dovecot
       tags: system_mail
   vars_files:
-    - vars/config-main.yml
+    - vars/config-main-sso-rj-ca.yml
 
 - name: Install various web dependencies
-  hosts: web
+  hosts: sso-rj
   sudo: yes
   roles:
     - role: web/apache2
@@ -93,10 +93,10 @@
     - role: web/php-composer
       tags: web_php5
   vars_files:
-    - vars/config-main.yml
+    - vars/config-main-sso-rj-ca.yml
 
 - name: Install and configure main app
-  hosts: web
+  hosts: sso-rj
   sudo: yes
   tags:
     - app
@@ -104,4 +104,4 @@
     - role: app/main
       tags: app_main
   vars_files:
-    - vars/config-main.yml
+    - vars/config-main-sso-rj-ca.yml

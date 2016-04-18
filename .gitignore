@@ -1,2 +1,11 @@
+# Ignore various generated files
 /.vagrant/
 /.idea/
+
+# Ignore cache
+/provisioning/fetched/*
+
+# Do not commit sensitive configs
+/provisioning/vars/*
+!/provisioning/vars/config-main-EXAMPLE.yml
+!/provisioning/vars/config-elasticsearch.yml
